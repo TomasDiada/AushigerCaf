@@ -2,13 +2,70 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Меню кафе</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { text-align: center; }
-    .menu-item { margin-bottom: 15px; }
-    button { padding: 5px 10px; }
-    #order { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .menu-item button {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-item button:hover {
+      background-color: #0056b3;
+    }
+
+    #order {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+
+    #order-list {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    #send-order {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #send-order:hover {
+      background-color: #218838;
+    }
   </style>
 </head>
 <body>
@@ -24,7 +81,6 @@
   </div>
 
   <script>
-    // Пример меню — потом можно добавить из файла или базы
     const menu = [
       { id: 1, name: "Капучино", price: 150 },
       { id: 2, name: "Латте", price: 170 },
@@ -38,18 +94,16 @@
 
     let order = [];
 
-    // Показываем меню
     menu.forEach(item => {
       const div = document.createElement('div');
       div.className = 'menu-item';
       div.innerHTML = `
-        <strong>${item.name}</strong> — ${item.price} ₽
+        <span>${item.name} — ${item.price} ₽</span>
         <button data-id="${item.id}">Добавить</button>
       `;
       menuDiv.appendChild(div);
     });
 
-    // Добавляем товар в заказ
     menuDiv.addEventListener('click', e => {
       if (e.target.tagName === 'BUTTON') {
         const id = +e.target.dataset.id;
@@ -61,18 +115,21 @@
       }
     });
 
-    // Показываем текущий заказ
     function renderOrder() {
       orderList.innerHTML = '';
-      order.forEach((item, index) => {
+      order.forEach(item => {
         const li = document.createElement('li');
         li.textContent = `${item.name} — ${item.price} ₽`;
         orderList.appendChild(li);
       });
     }
 
-    // Отправляем заказ боту через Telegram Web App API
     sendOrderBtn.addEventListener('click', () => {
+      if (order.length === 0) {
+        alert('Добавьте что-нибудь в заказ!');
+        return;
+      }
+
       if (window.Telegram.WebApp) {
         const data = order.map(item => item.name).join(', ');
         Telegram.WebApp.sendData(JSON.stringify({ order: data }));
@@ -80,7 +137,7 @@
         order = [];
         renderOrder();
       } else {
-        alert('Запустите это приложение из Telegram');
+        alert('Откройте приложение внутри Telegram');
       }
     });
   </script>
