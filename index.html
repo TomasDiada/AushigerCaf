@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Меню кафе</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { text-align: center; }
+    .menu-item { margin-bottom: 15px; }
+    button { padding: 5px 10px; }
+    #order { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Меню кафе</h1>
+
+  <div id="menu"></div>
+
+  <div id="order">
+    <h2>Ваш заказ:</h2>
+    <ul id="order-list"></ul>
+    <button id="send-order">Отправить заказ</button>
+  </div>
+
+  <script>
+    // Пример меню — потом можно добавить из файла или базы
+    const menu = [
+      { id: 1, name: "Капучино", price: 150 },
+      { id: 2, name: "Латте", price: 170 },
+      { id: 3, name: "Эспрессо", price: 100 },
+      { id: 4, name: "Чизкейк", price: 250 },
+    ];
+
+    const menuDiv = document.getElementById('menu');
+    const orderList = document.getElementById('order-list');
+    const sendOrderBtn = document.getElementById('send-order');
+
+    let order = [];
+
+    // Показываем меню
+    menu.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'menu-item';
+      div.innerHTML = `
+        <strong>${item.name}</strong> — ${item.price} ₽
+        <button data-id="${item.id}">Добавить</button>
+      `;
+      menuDiv.appendChild(div);
+    });
+
+    // Добавляем товар в заказ
+    menuDiv.addEventListener('click', e => {
+      if (e.target.tagName === 'BUTTON') {
+        const id = +e.target.dataset.id;
+        const item = menu.find(i => i.id === id);
+        if (item) {
+          order.push(item);
+          renderOrder();
+        }
+      }
+    });
+
+    // Показываем текущий заказ
+    function renderOrder() {
+      orderList.innerHTML = '';
+      order.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} — ${item.price} ₽`;
+        orderList.appendChild(li);
+      });
+    }
+
+    // Отправляем заказ боту через Telegram Web App API
+    sendOrderBtn.addEventListener('click', () => {
+      if (window.Telegram.WebApp) {
+        const data = order.map(item => item.name).join(', ');
+        Telegram.WebApp.sendData(JSON.stringify({ order: data }));
+        alert('Заказ отправлен!');
+        order = [];
+        renderOrder();
+      } else {
+        alert('Запустите это приложение из Telegram');
+      }
+    });
+  </script>
+
+</body>
+</html>
