@@ -221,11 +221,12 @@
     total: order.reduce((sum, item) => sum + item.price, 0)
   };
 
-  fetch('http://localhost:3000/order', {  // если сервер на твоём ПК
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
+fetch('https://552dfe7a-b39e-435f-9f2b-9afc70d56587-00-uko4uinb0y8a.riker.replit.dev/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(order)
+});
+
   .then(res => res.json())
   .then(response => {
     if (response.status === 'ok') {
