@@ -206,41 +206,42 @@
     });
 
     sendOrderBtn.addEventListener('click', () => {
-  if (order.length === 0) {
-    alert('Добавьте блюда в заказ!');
-    return;
-  }
+      if (order.length === 0) {
+        alert('Добавьте что-нибудь в заказ!');
+        return;
+      }
 
-  const summary = {};
-  order.forEach(item => {
-    summary[item.name] = (summary[item.name] || 0) + 1;
-  });
+      if (window.Telegram.WebApp) {
+        const summary = {};
+        order.forEach(item => {
+          summary[item.name] = (summary[item.name] || 0) + 1;
+        });
 
-  const data = {
-    order: summary,
-    total: order.reduce((sum, item) => sum + item.price, 0)
-  };
+        const data = {
+          order: summary,
+          total: order.reduce((sum, item) => sum + item.price, 0)
+        };
 
-fetch('https://552dfe7a-b39e-435f-9f2b-9afc70d56587-00-uko4uinb0y8a.riker.replit.dev/', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(order)
-});
-
-  .then(res => res.json())
-  .then(response => {
-    if (response.status === 'ok') {
-      alert('Заказ отправлен!');
-      order = [];
-      renderOrder();
-    } else {
-      alert('Ошибка при отправке заказа');
-    }
-  })
-  .catch(() => alert('Ошибка сети'));
-});
-
+        Telegram.WebApp.sendData(JSON.stringify(data));
+        alert('Заказ отправлен!');
+        order = [];
+        renderOrder();
+      } else {
+        alert('Откройте приложение внутри Telegram');
+      }
+    });
   </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
