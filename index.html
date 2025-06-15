@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Меню кафе</title>
+  <title>Меню кафе с картинками</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,13 +18,27 @@
 
     .menu-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       background-color: #fff;
       margin-bottom: 10px;
       padding: 10px 15px;
       border-radius: 12px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .menu-item-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
     }
 
     .menu-item button {
@@ -48,8 +62,41 @@
     }
 
     #order-list {
-      padding-left: 20px;
+      list-style: none;
+      padding: 0 10px;
       margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .order-item span {
+      flex-grow: 1;
+    }
+
+    .remove-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .remove-btn:hover {
+      background-color: #b52a3a;
+    }
+
+    #total {
+      font-weight: bold;
+      font-size: 16px;
+      text-align: right;
+      margin-bottom: 15px;
     }
 
     #send-order {
@@ -77,20 +124,22 @@
   <div id="order">
     <h2>Ваш заказ:</h2>
     <ul id="order-list"></ul>
+    <div id="total">Итого: 0 ₽</div>
     <button id="send-order">Отправить заказ</button>
   </div>
 
   <script>
     const menu = [
-      { id: 1, name: "Капучино", price: 150 },
-      { id: 2, name: "Латте", price: 170 },
-      { id: 3, name: "Эспрессо", price: 100 },
-      { id: 4, name: "Чизкейк", price: 250 },
+      { id: 1, name: "Капучино", price: 150, image: "https://i.imgur.com/XP2BE7q.jpg" },
+      { id: 2, name: "Латте", price: 170, image: "https://i.imgur.com/cXQ2rTZ.jpg" },
+      { id: 3, name: "Эспрессо", price: 100, image: "https://i.imgur.com/RUePBB8.jpg" },
+      { id: 4, name: "Чизкейк", price: 250, image: "https://i.imgur.com/Os6JZ7W.jpg" }
     ];
 
     const menuDiv = document.getElementById('menu');
     const orderList = document.getElementById('order-list');
     const sendOrderBtn = document.getElementById('send-order');
+    const totalDiv = document.getElementById('total');
 
     let order = [];
 
@@ -98,7 +147,10 @@
       const div = document.createElement('div');
       div.className = 'menu-item';
       div.innerHTML = `
-        <span>${item.name} — ${item.price} ₽</span>
+        <div class="menu-item-info">
+          <img src="${item.image}" alt="${item.name}" />
+          <span>${item.name} — ${item.price} ₽</span>
+        </div>
         <button data-id="${item.id}">Добавить</button>
       `;
       menuDiv.appendChild(div);
@@ -117,12 +169,41 @@
 
     function renderOrder() {
       orderList.innerHTML = '';
+      let total = 0;
+
+      const grouped = {};
       order.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = `${item.name} — ${item.price} ₽`;
-        orderList.appendChild(li);
+        if (!grouped[item.id]) {
+          grouped[item.id] = { ...item, quantity: 0 };
+        }
+        grouped[item.id].quantity++;
       });
+
+      Object.values(grouped).forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'order-item';
+        const itemTotal = item.price * item.quantity;
+        li.innerHTML = `
+          <span>${item.name} ×${item.quantity} — ${itemTotal} ₽</span>
+          <button class="remove-btn" data-id="${item.id}">❌</button>
+        `;
+        orderList.appendChild(li);
+        total += itemTotal;
+      });
+
+      totalDiv.textContent = `Итого: ${total} ₽`;
     }
+
+    orderList.addEventListener('click', e => {
+      if (e.target.classList.contains('remove-btn')) {
+        const id = +e.target.dataset.id;
+        const index = order.findIndex(i => i.id === id);
+        if (index !== -1) {
+          order.splice(index, 1);
+          renderOrder();
+        }
+      }
+    });
 
     sendOrderBtn.addEventListener('click', () => {
       if (order.length === 0) {
@@ -131,8 +212,17 @@
       }
 
       if (window.Telegram.WebApp) {
-        const data = order.map(item => item.name).join(', ');
-        Telegram.WebApp.sendData(JSON.stringify({ order: data }));
+        const summary = {};
+        order.forEach(item => {
+          summary[item.name] = (summary[item.name] || 0) + 1;
+        });
+
+        const data = {
+          order: summary,
+          total: order.reduce((sum, item) => sum + item.price, 0)
+        };
+
+        Telegram.WebApp.sendData(JSON.stringify(data));
         alert('Заказ отправлен!');
         order = [];
         renderOrder();
