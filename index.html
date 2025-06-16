@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Кафе - Меню</title>
+  <title>Кафе - Меню с комментариями к заказу</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -356,7 +356,8 @@
       color: var(--primary);
     }
     
-    #modal-content input {
+    #modal-content input,
+    #modal-content textarea {
       width: 100%;
       padding: 0.8rem 1rem;
       margin: 0.5rem 0;
@@ -369,11 +370,18 @@
       background: var(--bg);
       color: var(--text);
       transition: all 0.2s ease;
+      font-family: inherit;
     }
     
-    #modal-content input:focus {
+    #modal-content input:focus,
+    #modal-content textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.2);
+    }
+    
+    #modal-content textarea {
+      min-height: 80px;
+      resize: vertical;
     }
     
     .input-error {
@@ -477,6 +485,14 @@
       color: #c0392b;
       display: block;
     }
+    
+    .comment-label {
+      display: block;
+      text-align: left;
+      margin: 1rem 0 0.5rem 0;
+      font-weight: 500;
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -522,6 +538,9 @@
     <input type="tel" id="customer-phone" placeholder="Телефон" />
     <div class="error-message" id="phone-error"></div>
     
+    <div class="comment-label">Комментарий к заказу:</div>
+    <textarea id="customer-comment" placeholder="Укажите пожелания, особенности приготовления или доставки..."></textarea>
+    
     <div class="modal-buttons">
       <button id="confirm-order">Подтвердить заказ</button>
       <button id="cancel-order">Отмена</button>
@@ -531,11 +550,8 @@
 
   <script>
     // ===== КОНФИГУРАЦИЯ ТЕЛЕГРАМ =====
-    // ЗАМЕНИТЕ НА СВОИ ЗНАЧЕНИЯ!
     const TELEGRAM_BOT_TOKEN = "7601753893:AAF-FsFUSHv9BpvJCEFujndTe6t2THBlNLI";
     const TELEGRAM_CHAT_ID = "-4823920560";
-    
-    
     // ===== КОНЕЦ КОНФИГУРАЦИИ =====
     
     const menu = [
@@ -570,6 +586,7 @@
     const confirmOrderBtn = document.getElementById("confirm-order");
     const customerNameInput = document.getElementById("customer-name");
     const customerPhoneInput = document.getElementById("customer-phone");
+    const customerCommentInput = document.getElementById("customer-comment");
     const cancelOrderBtn = document.getElementById("cancel-order");
     const nameError = document.getElementById("name-error");
     const phoneError = document.getElementById("phone-error");
@@ -881,6 +898,12 @@
       let message = `📦 *Новый заказ!*`;
       message += `\n👤 *Имя:* ${orderData.name}`;
       message += `\n📱 *Телефон:* ${orderData.phone}`;
+      
+      // Добавляем комментарий, если он есть
+      if (orderData.comment) {
+        message += `\n💬 *Комментарий:* ${orderData.comment}`;
+      }
+      
       message += `\n\n🛒 *Заказ:*`;
       
       orderData.items.forEach(item => {
@@ -965,6 +988,7 @@
         
         const name = customerNameInput.value.trim();
         const phone = customerPhoneInput.value.trim();
+        const comment = customerCommentInput.value.trim();
         const items = Object.values(order);
         const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
         
@@ -972,6 +996,7 @@
         const orderData = {
           name,
           phone,
+          comment,
           items,
           total
         };
@@ -993,6 +1018,7 @@
               updateOrderSummary();
               customerNameInput.value = "";
               customerPhoneInput.value = "";
+              customerCommentInput.value = "";
               
               // Закрываем модальное окно через 3 секунды
               setTimeout(() => {
