@@ -1,371 +1,201 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Меню кафе</title>
+  <meta charset="UTF-8">
+  <title>Кафе</title>
   <style>
-    :root {
-      --main-color: #ff6f61;
-      --accent: #fff3f0;
-      --bg: #fdfdfd;
-      --text: #333;
-      --radius: 16px;
-    }
-
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: var(--bg);
-      margin: 0;
-      padding: 0;
-      color: var(--text);
-    }
-
-    header {
-      background: var(--main-color);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      border-bottom-left-radius: var(--radius);
-      border-bottom-right-radius: var(--radius);
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding: 20px 10px;
-      flex-wrap: wrap;
-    }
-
-    nav button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 999px;
-      background: #eee;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    nav button.active {
-      background: var(--main-color);
-      color: white;
-    }
-
-    #menu {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 10px 20px;
-    }
-
-    .menu-item {
-      display: flex;
-      gap: 15px;
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      padding: 15px;
-      margin-bottom: 15px;
-      align-items: center;
-    }
-
-    .menu-item img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: var(--radius);
-      border: 2px solid var(--accent);
-    }
-
-    .menu-name {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .menu-controls {
-      margin-top: 8px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .menu-controls input {
-      width: 50px;
-      padding: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .menu-controls button {
-      background: var(--main-color);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    #order-summary {
-      background: white;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    #order-items li {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-    }
-
-    #order-total {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    #clear-order, #submit-order {
-      margin-top: 20px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    #clear-order {
-      background: #ccc;
-      color: #333;
-    }
-
-    #submit-order {
-      background: var(--main-color);
-      color: white;
-      margin-left: 10px;
-    }
-
-    /* Модальное окно */
-    #modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    #modal-content {
-      background: white;
-      max-width: 400px;
-      margin: 100px auto;
-      padding: 20px;
-      border-radius: var(--radius);
-    }
-
-    #modal-content input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
-
-    #confirm-order {
-      background: var(--main-color);
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 999px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #modal-content button:last-child {
-      background: #ddd;
-      color: #333;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 999px;
-      font-weight: bold;
-      margin-left: 10px;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #fafafa; }
+    header { background: #d35400; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
+    .tabs { display: flex; justify-content: center; background: #f3f3f3; }
+    .tab-button { padding: 1rem; border: none; background: none; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+    .tab-button.active { color: #d35400; font-weight: bold; border-bottom: 2px solid #d35400; }
+    #menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; padding: 1rem; }
+    .menu-item { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .menu-item img { width: 100%; height: 120px; object-fit: cover; }
+    .menu-item div { padding: 0.5rem; }
+    .menu-name { font-weight: bold; margin-bottom: 0.3rem; }
+    .menu-controls { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    .menu-controls input { width: 40px; text-align: center; }
+    .menu-controls button { padding: 0.3rem 0.7rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    #order-summary { position: fixed; bottom: 0; width: 100%; background: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); padding: 1rem; display: none; }
+    #order-summary ul { list-style: none; padding: 0; margin: 0 0 0.5rem 0; }
+    #order-summary li { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+    #order-summary button { padding: 0.5rem 1rem; margin-right: 0.5rem; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    #submit-order { background: #2980b9; }
+    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    #modal-content { background: white; padding: 2rem; border-radius: 10px; width: 300px; text-align: center; }
+    #modal-content input { width: 100%; padding: 0.5rem; margin: 0.5rem 0; }
+    #modal-content button { padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
+  <header>Меню Кафе</header>
+  <div class="tabs">
+    <button class="tab-button active" data-category="bar">Бар</button>
+    <button class="tab-button" data-category="kitchen">Кухня</button>
+    <button class="tab-button" data-category="desserts">Десерты</button>
+  </div>
+  <div id="menu"></div>
 
-<header>Меню кафе</header>
-
-<nav>
-  <button class="tab-button active" data-category="bar">Бар</button>
-  <button class="tab-button" data-category="kitchen">Кухня</button>
-  <button class="tab-button" data-category="desserts">Десерты</button>
-</nav>
-
-<div id="menu"></div>
-
-<div id="order-summary" style="display:none;">
-  <h2>Ваш заказ</h2>
-  <ul id="order-items"></ul>
-  <div id="order-total"></div>
-  <button id="clear-order">Очистить</button>
-  <button id="submit-order">Оформить заказ</button>
-</div>
-
-<!-- Модальное окно -->
-<div id="modal">
-  <div id="modal-content">
-    <h3>Оформление заказа</h3>
-    <label>Имя:<br><input type="text" id="customer-name"></label>
-    <label>Телефон:<br><input type="tel" id="customer-phone"></label>
-    <div style="margin-top: 10px;">
-      <button id="confirm-order">Подтвердить</button>
-      <button onclick="document.getElementById('modal').style.display='none'">Отмена</button>
+  <div id="order-summary">
+    <ul id="order-items"></ul>
+    <div id="order-total"></div>
+    <div style="margin-top: 0.5rem;">
+      <button id="clear-order">Очистить</button>
+      <button id="submit-order">Оформить заказ</button>
     </div>
   </div>
-</div>
 
-<script>
-const menu = [
-  { id: 1, category: 'bar', name: 'Капучино', price: 150, image: 'https://i.imgur.com/XP2BE7q.jpg' },
-  { id: 2, category: 'bar', name: 'Латте', price: 170, image: 'https://i.imgur.com/cXQ2rTZ.jpg' },
-  { id: 3, category: 'kitchen', name: 'Цезарь', price: 350, image: 'https://i.imgur.com/oXf7GXb.jpeg' },
-  { id: 4, category: 'kitchen', name: 'Паста', price: 420, image: 'https://i.imgur.com/U2F3h1H.jpeg' },
-  { id: 5, category: 'desserts', name: 'Чизкейк', price: 250, image: 'https://i.imgur.com/Os6JZ7W.jpg' },
-  { id: 6, category: 'desserts', name: 'Мороженое', price: 150, image: 'https://i.imgur.com/ghi789.jpg' }
-];
+  <div id="modal">
+    <div id="modal-content">
+      <h3>Ваши данные</h3>
+      <input type="text" id="customer-name" placeholder="Имя">
+      <input type="text" id="customer-phone" placeholder="Телефон">
+      <button id="confirm-order">Подтвердить заказ</button>
+    </div>
+  </div>
 
-const menuDiv = document.getElementById('menu');
-const buttons = document.querySelectorAll('.tab-button');
-const orderSummary = document.getElementById('order-summary');
-const orderItemsList = document.getElementById('order-items');
-const orderTotalDiv = document.getElementById('order-total');
-const clearOrderBtn = document.getElementById('clear-order');
-const submitOrderBtn = document.getElementById('submit-order');
-const confirmOrderBtn = document.getElementById('confirm-order');
+  <script>
+    const menu = [
+      { id: 1, category: 'bar', name: 'Капучино', price: 150, image: 'https://i.imgur.com/XP2BE7q.jpg' },
+      { id: 2, category: 'bar', name: 'Латте', price: 170, image: 'https://i.imgur.com/cXQ2rTZ.jpg' },
+      { id: 3, category: 'kitchen', name: 'Цезарь', price: 350, image: 'https://i.imgur.com/oXf7GXb.jpeg' },
+      { id: 4, category: 'kitchen', name: 'Паста', price: 420, image: 'https://i.imgur.com/U2F3h1H.jpeg' },
+      { id: 5, category: 'desserts', name: 'Чизкейк', price: 250, image: 'https://i.imgur.com/Os6JZ7W.jpg' },
+      { id: 6, category: 'desserts', name: 'Мороженое', price: 150, image: 'https://i.imgur.com/ghi789.jpg' }
+    ];
 
-let order = JSON.parse(localStorage.getItem('order')) || {};
+    const menuDiv = document.getElementById('menu');
+    const buttons = document.querySelectorAll('.tab-button');
+    const orderSummary = document.getElementById('order-summary');
+    const orderItemsList = document.getElementById('order-items');
+    const orderTotalDiv = document.getElementById('order-total');
+    const clearOrderBtn = document.getElementById('clear-order');
+    const submitOrderBtn = document.getElementById('submit-order');
+    const confirmOrderBtn = document.getElementById('confirm-order');
 
-function saveOrder() {
-  localStorage.setItem('order', JSON.stringify(order));
-}
+    let order = JSON.parse(localStorage.getItem('order')) || {};
 
-function updateOrderSummary() {
-  const items = Object.values(order);
-  if (items.length === 0) {
-    orderSummary.style.display = 'none';
-    return;
-  }
-  orderSummary.style.display = 'block';
-  orderItemsList.innerHTML = '';
-  let total = 0;
-  items.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${item.name} x${item.quantity}`;
-    const priceSpan = document.createElement('span');
-    priceSpan.textContent = `${item.price * item.quantity}₽`;
-    li.appendChild(priceSpan);
-    orderItemsList.appendChild(li);
-    total += item.price * item.quantity;
-  });
-  orderTotalDiv.textContent = `Итого: ${total}₽`;
-}
+    function saveOrder() {
+      localStorage.setItem('order', JSON.stringify(order));
+    }
 
-function renderMenu(category) {
-  menuDiv.innerHTML = '';
-  const filtered = menu.filter(item => item.category === category);
-  filtered.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'menu-item';
-    div.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" />
-      <div>
-        <div class="menu-name">${item.name}</div>
-        <div>${item.price} ₽</div>
-        <div class="menu-controls">
-          <input type="number" value="1" min="1" />
-          <button>Добавить</button>
-        </div>
-      </div>
-    `;
-    const qtyInput = div.querySelector('input');
-    const addBtn = div.querySelector('button');
-    addBtn.addEventListener('click', () => {
-      const qty = parseInt(qtyInput.value);
-      if (qty < 1) return;
-      if (order[item.id]) {
-        order[item.id].quantity += qty;
-      } else {
-        order[item.id] = {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: qty
-        };
+    function updateOrderSummary() {
+      const items = Object.values(order);
+      if (items.length === 0) {
+        orderSummary.style.display = 'none';
+        return;
       }
+      orderSummary.style.display = 'block';
+      orderItemsList.innerHTML = '';
+      let total = 0;
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} x${item.quantity}`;
+        const priceSpan = document.createElement('span');
+        priceSpan.textContent = `${item.price * item.quantity}₽`;
+        li.appendChild(priceSpan);
+        orderItemsList.appendChild(li);
+        total += item.price * item.quantity;
+      });
+      orderTotalDiv.textContent = `Итого: ${total}₽`;
+    }
+
+    function renderMenu(category) {
+      menuDiv.innerHTML = '';
+      const filtered = menu.filter(item => item.category === category);
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'menu-item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <div>
+            <div class="menu-name">${item.name}</div>
+            <div>${item.price} ₽</div>
+            <div class="menu-controls">
+              <input type="number" value="1" min="1" />
+              <button>Добавить</button>
+            </div>
+          </div>
+        `;
+        const qtyInput = div.querySelector('input');
+        const addBtn = div.querySelector('button');
+        addBtn.addEventListener('click', () => {
+          const qty = parseInt(qtyInput.value);
+          if (qty < 1) return;
+          if (order[item.id]) {
+            order[item.id].quantity += qty;
+          } else {
+            order[item.id] = {
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: qty
+            };
+          }
+          saveOrder();
+          updateOrderSummary();
+        });
+        menuDiv.appendChild(div);
+      });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        renderMenu(button.dataset.category);
+      });
+    });
+
+    clearOrderBtn.addEventListener('click', () => {
+      if (confirm('Очистить заказ?')) {
+        order = {};
+        saveOrder();
+        updateOrderSummary();
+      }
+    });
+
+    submitOrderBtn.addEventListener('click', () => {
+      if (Object.keys(order).length === 0) {
+        alert("Сначала добавьте товары в заказ.");
+        return;
+      }
+      document.getElementById('customer-name').value = localStorage.getItem('customerName') || '';
+      document.getElementById('customer-phone').value = localStorage.getItem('customerPhone') || '';
+      document.getElementById('modal').style.display = 'flex';
+    });
+
+    confirmOrderBtn.addEventListener('click', () => {
+      const name = document.getElementById('customer-name').value.trim();
+      const phone = document.getElementById('customer-phone').value.trim();
+
+      if (!name || !phone) {
+        alert("Пожалуйста, введите имя и телефон.");
+        return;
+      }
+
+      localStorage.setItem('customerName', name);
+      localStorage.setItem('customerPhone', phone);
+
+      let orderText = `Новый заказ от ${name}, тел: ${phone}\n\n`;
+      let total = 0;
+      Object.values(order).forEach(item => {
+        orderText += `${item.name} x${item.quantity} = ${item.price * item.quantity}₽\n`;
+        total += item.price * item.quantity;
+      });
+      orderText += `\nИтого: ${total}₽`;
+
+      alert(orderText); // Здесь можно сделать отправку в Telegram
+
+      order = {};
       saveOrder();
       updateOrderSummary();
+      document.getElementById('modal').style.display = 'none';
     });
-    menuDiv.appendChild(div);
-  });
-}
 
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    buttons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-    renderMenu(button.dataset.category);
-  });
-});
-
-clearOrderBtn.addEventListener('click', () => {
-  if (confirm('Очистить заказ?')) {
-    order = {};
-    saveOrder();
+    renderMenu('bar');
     updateOrderSummary();
-  }
-});
-
-submitOrderBtn.addEventListener('click', () => {
-  if (Object.keys(order).length === 0) {
-    alert("Сначала добавьте товары в заказ.");
-    return;
-  }
-  document.getElementById('modal').style.display = 'block';
-});
-
-confirmOrderBtn.addEventListener('click', () => {
-  const name = document.getElementById('customer-name').value.trim();
-  const phone = document.getElementById('customer-phone').value.trim();
-
-  if (!name || !phone) {
-    alert("Пожалуйста, введите имя и телефон.");
-    return;
-  }
-
-  let orderText = `Новый заказ от ${name}, тел: ${phone}\n\n`;
-  let total = 0;
-  Object.values(order).forEach(item => {
-    orderText += `${item.name} x${item.quantity} = ${item.price * item.quantity}₽\n`;
-    total += item.price * item.quantity;
-  });
-  orderText += `\nИтого: ${total}₽`;
-
-  alert(orderText); // Здесь можно будет отправлять в Telegram
-
-  order = {};
-  saveOrder();
-  updateOrderSummary();
-  document.getElementById('modal').style.display = 'none';
-});
-
-renderMenu('bar');
-updateOrderSummary();
-</script>
-
+  </script>
 </body>
 </html>
