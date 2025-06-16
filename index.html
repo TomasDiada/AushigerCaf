@@ -295,14 +295,15 @@
     </div>
   </div>
 
-  <div id="modal">
-    <div id="modal-content">
-      <h3>Ваши данные</h3>
-      <input type="text" id="customer-name" placeholder="Имя" />
-      <input type="text" id="customer-phone" placeholder="Телефон" />
-      <button id="confirm-order">Подтвердить заказ</button>
-    </div>
+<div id="modal">
+  <div id="modal-content">
+    <button id="close-modal" style="float: right; background: none; border: none; font-size: 20px;">✖</button>
+    <h3>Ваши данные</h3>
+    <input type="text" id="customer-name" placeholder="Имя" />
+    <input type="text" id="customer-phone" placeholder="Телефон" />
+    <button id="confirm-order">Подтвердить заказ</button>
   </div>
+</div>
 
   <script>
     const menu = [
@@ -586,11 +587,11 @@ function createMenuItem(item) {
     });
 
     // Закрыть модалку кликом вне контента
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-      }
-    });
+const closeModalBtn = document.getElementById("close-modal");
+
+closeModalBtn.addEventListener("click", () => {
+  modal.style.display = "none";
+});
 
     // Обработка Enter в полях модалки
     [customerNameInput, customerPhoneInput].forEach((input) => {
