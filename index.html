@@ -17,20 +17,32 @@
       background: #d35400;
       color: white;
       padding: 1rem;
-      text-align: center;
       font-size: 1.5rem;
-      font-weight: 700;
-      user-select: none;
+      position: relative;
+      height: 3.5rem;
+      line-height: 3.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    header .phone-link {
+
+    .header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+    }
+
+    .phone-number {
       position: absolute;
       right: 1rem;
       top: 50%;
       transform: translateY(-50%);
       color: white;
-      font-weight: bold;
       text-decoration: none;
+      font-size: 1rem;
     }
+
     #search-bar {
       padding: 0.5rem 1rem;
       background: #fff;
@@ -257,8 +269,8 @@
 </head>
 <body>
 <header>
-  Кафе Аушигер
-  <a href="tel:+79001234567" class="phone-link">+7 (900) 123-45-67</a>
+  <div class="header-title">Меню Кафе</div>
+  <a href="tel:+79001234567" class="phone-number">+7 (900) 123-45-67</a>
 </header>
   <div id="search-bar">
     <input
