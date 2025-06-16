@@ -457,17 +457,25 @@
       min-height: 70px;
     }
     
-    .currency-toggle {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: rgba(0,0,0,0.1);
-      border: none;
-      border-radius: 4px;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.8rem;
-      color: white;
-      cursor: pointer;
+    .status-message {
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: none;
+    }
+    
+    .status-success {
+      background: rgba(39, 174, 96, 0.2);
+      color: #27ae60;
+      display: block;
+    }
+    
+    .status-error {
+      background: rgba(192, 57, 43, 0.2);
+      color: #c0392b;
+      display: block;
     }
   </style>
 </head>
@@ -505,6 +513,9 @@
 <div id="modal">
   <div id="modal-content">
     <h3>Ваши данные</h3>
+    
+    <div id="status-message" class="status-message"></div>
+    
     <input type="text" id="customer-name" placeholder="Имя" />
     <div class="error-message" id="name-error"></div>
     
@@ -519,10 +530,13 @@
 </div>
 
   <script>
-    // Конфигурация
-    const CURRENCY = "₽";
-    const PHONE_PATTERN = /^[\d\s\(\)\-+]{7,}$/;
-    const DEFAULT_CURRENCY_RATE = 1;
+    // ===== КОНФИГУРАЦИЯ ТЕЛЕГРАМ =====
+    // ЗАМЕНИТЕ НА СВОИ ЗНАЧЕНИЯ!
+    const TELEGRAM_BOT_TOKEN = "7820744812:AAH3Gb_abS7QRSohXqyt-rOnX_pnENSVu-g";
+    const TELEGRAM_CHAT_ID = "-4823920560";
+    
+    
+    // ===== КОНЕЦ КОНФИГУРАЦИИ =====
     
     const menu = [
       { id: 1, category: "bar", name: "Капучино", price: 150, image: "https://i.postimg.cc/bwD3vVbt/image.jpg" },
@@ -545,6 +559,7 @@
     const menuContainer = document.getElementById("menu-container");
     const searchInput = document.getElementById("search-input");
     const cartBadge = document.getElementById("cart-badge");
+    const statusMessage = document.getElementById("status-message");
 
     const orderSummary = document.getElementById("order-summary");
     const orderItemsList = document.getElementById("order-items");
@@ -560,12 +575,10 @@
     const phoneError = document.getElementById("phone-error");
 
     let order = JSON.parse(localStorage.getItem("order")) || {};
-    let currencyRate = DEFAULT_CURRENCY_RATE;
-    let currentCurrency = CURRENCY;
 
     // Форматирование цены
     function formatPrice(price) {
-      return (price * currencyRate).toFixed(2) + currentCurrency;
+      return price.toFixed(2) + "₽";
     }
 
     // Сохранить заказ в localStorage
@@ -854,11 +867,6 @@
         phoneError.textContent = "Пожалуйста, введите телефон";
         phoneError.style.display = "block";
         isValid = false;
-      } else if (!PHONE_PATTERN.test(customerPhoneInput.value)) {
-        customerPhoneInput.classList.add("input-error");
-        phoneError.textContent = "Введите корректный номер телефона";
-        phoneError.style.display = "block";
-        isValid = false;
       } else {
         customerPhoneInput.classList.remove("input-error");
         phoneError.style.display = "none";
@@ -867,8 +875,58 @@
       return isValid;
     }
 
+    // Отправка заказа в Telegram
+    async function sendToTelegram(orderData) {
+      // Формируем сообщение для Telegram
+      let message = `📦 *Новый заказ!*`;
+      message += `\n👤 *Имя:* ${orderData.name}`;
+      message += `\n📱 *Телефон:* ${orderData.phone}`;
+      message += `\n\n🛒 *Заказ:*`;
+      
+      orderData.items.forEach(item => {
+        message += `\n- ${item.name} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`;
+      });
+      
+      message += `\n\n💳 *Итого:* ${formatPrice(orderData.total)}`;
+      message += `\n\n⏰ *Время заказа:* ${new Date().toLocaleString()}`;
+      
+      // Кодируем сообщение для URL
+      const encodedMessage = encodeURIComponent(message);
+      
+      // Формируем URL для запроса
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodedMessage}&parse_mode=Markdown`;
+      
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.ok) {
+          return true;
+        } else {
+          console.error("Ошибка Telegram API:", result);
+          return false;
+        }
+      } catch (error) {
+        console.error("Ошибка сети:", error);
+        return false;
+      }
+    }
+
+    // Показать статус сообщения
+    function showStatus(message, isSuccess) {
+      statusMessage.textContent = message;
+      statusMessage.className = isSuccess ? "status-message status-success" : "status-message status-error";
+    }
+
     // Инициализация
     function init() {
+      // Проверка конфигурации Telegram
+      if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || 
+          TELEGRAM_BOT_TOKEN === "ВАШ_ТОКЕН_БОТА" || 
+          TELEGRAM_CHAT_ID === "ВАШ_CHAT_ID") {
+        showStatus("Внимание: Telegram не настроен. Заказы не будут отправляться.", false);
+      }
+      
       renderMenu();
       updateOrderSummary();
       updateCartBadge();
@@ -902,37 +960,61 @@
       });
 
       // Подтвердить заказ
-      confirmOrderBtn.addEventListener("click", () => {
+      confirmOrderBtn.addEventListener("click", async () => {
         if (!validateForm()) return;
         
         const name = customerNameInput.value.trim();
         const phone = customerPhoneInput.value.trim();
-
-        let orderText = `Новый заказ:\nИмя: ${name}\nТелефон: ${phone}\n\nЗаказ:\n`;
-        Object.values(order).forEach((item) => {
-          orderText += `${item.name} x${item.quantity} - ${formatPrice(item.price * item.quantity)}\n`;
-        });
-        const total = Object.values(order).reduce(
-          (acc, i) => acc + i.price * i.quantity,
-          0
-        );
-        orderText += `\nИтого: ${formatPrice(total)}`;
-
-        alert(orderText);
-
-        order = {};
-        saveOrder();
-        updateOrderSummary();
-        customerNameInput.value = "";
-        customerPhoneInput.value = "";
-        modal.style.display = "none";
-        modal.classList.remove("visible");
+        const items = Object.values(order);
+        const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        
+        // Данные заказа
+        const orderData = {
+          name,
+          phone,
+          items,
+          total
+        };
+        
+        // Показываем статус отправки
+        showStatus("Отправка заказа...", true);
+        
+        try {
+          // Отправляем в Telegram
+          const telegramSuccess = await sendToTelegram(orderData);
+          
+          if (telegramSuccess) {
+            showStatus("✅ Заказ успешно отправлен! Ожидайте звонка для подтверждения.", true);
+            
+            // Очищаем заказ после успешной отправки
+            setTimeout(() => {
+              order = {};
+              saveOrder();
+              updateOrderSummary();
+              customerNameInput.value = "";
+              customerPhoneInput.value = "";
+              
+              // Закрываем модальное окно через 3 секунды
+              setTimeout(() => {
+                modal.style.display = "none";
+                modal.classList.remove("visible");
+                statusMessage.className = "status-message";
+              }, 3000);
+            }, 2000);
+          } else {
+            showStatus("❌ Ошибка при отправке заказа. Пожалуйста, позвоните нам.", false);
+          }
+        } catch (error) {
+          console.error("Ошибка:", error);
+          showStatus("❌ Произошла ошибка. Пожалуйста, позвоните нам.", false);
+        }
       });
 
       // Обработчик для кнопки "Отмена"
       cancelOrderBtn.addEventListener("click", () => {
         modal.style.display = "none";
         modal.classList.remove("visible");
+        statusMessage.className = "status-message";
       });
 
       // Закрыть модалку кликом вне контента
@@ -940,6 +1022,7 @@
         if (e.target === modal) {
           modal.style.display = "none";
           modal.classList.remove("visible");
+          statusMessage.className = "status-message";
         }
       });
 
