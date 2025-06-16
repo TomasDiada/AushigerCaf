@@ -270,290 +270,361 @@
   #modal-content input {
     width: 100%;
     padding: 0.65rem 1rem;
-    margin: 0.55rem 0;
+    margin: 0.55rem 0 1.2rem 0;
     font-size: 1.1rem;
-    border-radius: 12px;
-    border: 1.5px solid #ddd;
-    box-sizing: border-box;
+    border-radius: 10px;
+    border: 1.8px solid #d35400;
+    outline-offset: 2px;
     transition: border-color 0.3s ease;
+    box-sizing: border-box;
   }
   #modal-content input:focus {
-    border-color: #d35400;
-    box-shadow: 0 0 10px rgba(211, 84, 0, 0.5);
-    outline: none;
+    border-color: #e67e22;
+    box-shadow: 0 0 8px rgba(230,126,34,0.5);
   }
-  #modal-content button {
-    padding: 0.7rem 1.3rem;
-    background: #d35400;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+  #modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  #modal-buttons button {
+    padding: 0.65rem 1.5rem;
     font-weight: 700;
-    letter-spacing: 1.2px;
-    margin-top: 1.4rem;
-    width: 100%;
+    letter-spacing: 0.8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
     transition: background 0.3s ease;
   }
-  #modal-content button:hover {
-    background: #e67e22;
+  #modal-submit {
+    background: #27ae60;
+    color: white;
   }
-  @media (max-width: 600px) {
-    .menu-item {
-      flex-direction: column;
-      align-items: flex-start;
+  #modal-submit:hover {
+    background: #2ecc71;
+  }
+  #modal-cancel {
+    background: #c0392b;
+    color: white;
+  }
+  #modal-cancel:hover {
+    background: #e74c3c;
+  }
+  @media (max-width: 520px) {
+    #menu {
+      padding: 1rem 1rem 3rem 1rem;
     }
     .menu-item img {
-      width: 100%;
-      height: auto;
-      margin-bottom: 0.6rem;
-      border: 3px solid #f39c12;
+      width: 60px;
+      height: 44px;
     }
-    .menu-controls {
-      margin-left: 0;
-      width: 100%;
-      justify-content: space-between;
-    }
-    #order-summary {
-      max-height: 55vh;
-      padding: 1rem 1.2rem;
+    .menu-controls input {
+      width: 44px;
     }
   }
 </style>
 </head>
 <body>
+
 <header>Меню Кафе</header>
+
 <div id="search-bar">
-  <input type="text" id="search-input" placeholder="Поиск по меню..." />
+  <input type="search" id="search-input" placeholder="Поиск по меню..." />
 </div>
-<div id="menu"></div>
+
+<main id="menu">
+  <!-- Категории меню появятся здесь динамически -->
+</main>
 
 <div id="order-summary">
   <ul id="order-items"></ul>
-  <div id="order-total"></div>
-  <div>
-    <button id="clear-order">Очистить</button>
-    <button id="submit-order">Оформить заказ</button>
-  </div>
+  <div id="order-total">Итого: 0 ₽</div>
+  <button id="clear-order">Очистить заказ</button>
+  <button id="submit-order">Оформить заказ</button>
 </div>
 
+<!-- Модальное окно для ввода данных покупателя -->
 <div id="modal">
   <div id="modal-content">
-    <h3>Ваши данные</h3>
-    <input type="text" id="customer-name" placeholder="Имя" />
-    <input type="text" id="customer-phone" placeholder="Телефон" />
-    <button id="confirm-order">Подтвердить заказ</button>
+    <h3>Оформление заказа</h3>
+    <input type="text" id="customer-name" placeholder="Ваше имя" />
+    <input type="tel" id="customer-phone" placeholder="Телефон" pattern="[0-9+ -]{7,}" />
+    <div id="modal-buttons">
+      <button id="modal-submit">Отправить</button>
+      <button id="modal-cancel">Отмена</button>
+    </div>
   </div>
 </div>
 
 <script>
+  // Меню по категориям (исправлены запятые и ключ desserts)
   const menuData = {
     kitchen: [
-      {id: 1, name: "Цезарь", price: 350, image: "https://i.postimg.cc/3xFCWMNW/image.jpg" },
-      {id: 2, name: "Паста", price: 420, image: "https://i.postimg.cc/CMnGkn53/image.jpg" },
-      {id: 3, name: "Шаурма", price: 210, image: "https://i.postimg.cc/fLG0B5y6/image.webp"}
+      {id: 1, name: "Пельмени", price: 350, image: "https://i.postimg.cc/fRPSYZHH/image.jpg"},
+      {id: 2, name: "Борщ", price: 280, image: "https://i.postimg.cc/xT8W1vVX/image.jpg"},
+      {id: 3, name: "Голубцы", price: 390, image: "https://i.postimg.cc/BtCHHZM1/image.jpg"}
     ],
-    dessert: [
-      {id: 4, name: "Чизкейк", price: 250, image: "https://i.postimg.cc/MG00cCGv/image.jpg"},
-      {id: 5, name: "Мороженое", price: 150, image: "https://i.postimg.cc/mDnCHB7N/image.jpg"}
+    desserts: [
+      {id: 4, name: "Чизкейк", price: 250, image: "https://i.postimg.cc/DyHDF4pm/image.jpg"},
+      {id: 5, name: "Мороженое", price: 120, image: "https://i.postimg.cc/yYGtjHxn/image.jpg"}
     ],
     bar: [
       {id: 6, name: "Капучино", price: 150, image: "https://i.postimg.cc/bwD3vVbt/image.jpg"},
       {id: 7, name: "Латте", price: 170, image: "https://i.postimg.cc/RF9RXMY7/image.jpg"},
-      {id: 8, name: "Кола 0,5", price: 120, image: "https://i.postimg.cc/yYqFP6Sk/image.jpg"}
+      {id: 8, name: "Кола 0,5", price: 120, image: "https://i.postimg.cc/yYqFP6Sk/image.jpg"},
       {id: 9, name: "RedBull 0,5", price: 180, image: "https://i.postimg.cc/0ynDPpXw/image.jpg"}
     ]
   };
 
-  const menuEl = document.getElementById('menu');
-  const orderSummary = document.getElementById('order-summary');
-  const orderItemsEl = document.getElementById('order-items');
-  const orderTotalEl = document.getElementById('order-total');
-  const clearOrderBtn = document.getElementById('clear-order');
-  const submitOrderBtn = document.getElementById('submit-order');
-  const modal = document.getElementById('modal');
-  const confirmOrderBtn = document.getElementById('confirm-order');
-  const customerNameInput = document.getElementById('customer-name');
-  const customerPhoneInput = document.getElementById('customer-phone');
+  // Отображаемые имена категорий на русском
+  const categoryNames = {
+    kitchen: "Кухня",
+    desserts: "Десерты",
+    bar: "Бар"
+  };
+
+  const menuContainer = document.getElementById('menu');
   const searchInput = document.getElementById('search-input');
 
+  // Заказ: объект, где ключ — id товара, значение — объект {item, quantity}
   let order = {};
 
-  // Создание категорий с анимацией сворачивания
-  function createCategory(name, items, cssClass) {
-    const category = document.createElement('div');
-    category.classList.add('category');
-    category.dataset.category = name;
+  // Создаем и возвращаем DOM элемент для одного блюда
+  function createMenuItem(item) {
+    const itemEl = document.createElement('li');
+    itemEl.className = 'menu-item';
+
+    itemEl.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" loading="lazy" />
+      <div class="menu-info">
+        <div class="menu-name">${item.name}</div>
+        <div class="menu-price">${item.price} ₽</div>
+      </div>
+      <div class="menu-controls">
+        <input type="number" min="1" step="1" value="1" aria-label="Количество ${item.name}" />
+        <button>Добавить</button>
+      </div>
+    `;
+
+    const quantityInput = itemEl.querySelector('input[type="number"]');
+    const addButton = itemEl.querySelector('button');
+
+    addButton.addEventListener('click', () => {
+      let qty = parseInt(quantityInput.value);
+      if (isNaN(qty) || qty < 1) {
+        alert("Пожалуйста, введите корректное количество (1 или больше).");
+        quantityInput.value = 1;
+        return;
+      }
+      addToOrder(item, qty);
+      quantityInput.value = 1;
+    });
+
+    return itemEl;
+  }
+
+  // Создаем категорию с заголовком и списком блюд
+  function createCategory(name, items) {
+    const categoryEl = document.createElement('section');
+    categoryEl.className = 'category';
+    categoryEl.dataset.category = name;
 
     const header = document.createElement('div');
-    header.classList.add('category-header', cssClass);
-    header.textContent = name[0].toUpperCase() + name.slice(1);
+    header.className = `category-header ${name}`;
+    header.tabIndex = 0; // чтобы можно было клавишей переключать
+    header.setAttribute('role', 'button');
+    header.setAttribute('aria-expanded', 'true');
+    header.textContent = categoryNames[name] || name;
+
     const toggleIcon = document.createElement('span');
-    toggleIcon.classList.add('toggle-icon');
+    toggleIcon.className = 'toggle-icon';
     toggleIcon.textContent = '▼';
     header.appendChild(toggleIcon);
-    category.appendChild(header);
 
-    const itemsContainer = document.createElement('div');
-    itemsContainer.classList.add('category-items');
+    const itemsList = document.createElement('ul');
+    itemsList.className = 'category-items';
 
     items.forEach(item => {
-      const itemEl = document.createElement('div');
-      itemEl.classList.add('menu-item');
-
-      const img = document.createElement('img');
-      img.src = item.image;
-      img.alt = item.name;
-
-      const info = document.createElement('div');
-      info.classList.add('menu-info');
-      const nameEl = document.createElement('div');
-      nameEl.classList.add('menu-name');
-      nameEl.textContent = item.name;
-      const priceEl = document.createElement('div');
-      priceEl.classList.add('menu-price');
-      priceEl.textContent = item.price + ' ₽';
-
-      info.appendChild(nameEl);
-      info.appendChild(priceEl);
-
-      const controls = document.createElement('div');
-      controls.classList.add('menu-controls');
-
-      const quantityInput = document.createElement('input');
-      quantityInput.type = 'number';
-      quantityInput.min = 1;
-      quantityInput.value = 1;
-
-      const addButton = document.createElement('button');
-      addButton.textContent = 'Добавить';
-
-      addButton.addEventListener('click', () => {
-        const qty = Number(quantityInput.value);
-        if (qty > 0) {
-          addToOrder(item.id, item.name, item.price, qty);
-        }
-      });
-
-      controls.appendChild(quantityInput);
-      controls.appendChild(addButton);
-
-      itemEl.appendChild(img);
-      itemEl.appendChild(info);
-      itemEl.appendChild(controls);
-
-      itemsContainer.appendChild(itemEl);
+      itemsList.appendChild(createMenuItem(item));
     });
 
-    category.appendChild(itemsContainer);
-
-    // Сворачивание/разворачивание категории
     header.addEventListener('click', () => {
-      category.classList.toggle('collapsed');
-      if (category.classList.contains('collapsed')) {
-        itemsContainer.style.maxHeight = '0';
-        itemsContainer.style.padding = '0 1.3rem';
-      } else {
-        itemsContainer.style.maxHeight = itemsContainer.scrollHeight + 'px';
-        itemsContainer.style.padding = '1rem 1.3rem 1.3rem 1.3rem';
+      const isCollapsed = categoryEl.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', !isCollapsed);
+    });
+    header.addEventListener('keydown', (e) => {
+      if (e.key === "Enter" || e.key === " " ) {
+        e.preventDefault();
+        header.click();
       }
     });
 
-    // Изначально развёрнута
-    itemsContainer.style.maxHeight = itemsContainer.scrollHeight + 'px';
+    categoryEl.appendChild(header);
+    categoryEl.appendChild(itemsList);
 
-    return category;
+    return categoryEl;
   }
 
-  // Заполнение меню
-  function renderMenu(filterText = '') {
-    menuEl.innerHTML = '';
-    Object.entries(menuData).forEach(([categoryName, items]) => {
-      // Фильтрация по поиску
-      const filteredItems = items.filter(item =>
-        item.name.toLowerCase().includes(filterText.toLowerCase())
-      );
-      if (filteredItems.length > 0) {
-        let cssClass = '';
-        if (categoryName === 'kitchen') cssClass = 'kitchen';
-        if (categoryName === 'desserts') cssClass = 'desserts';
-        if (categoryName === 'bar') cssClass = 'bar';
-        menuEl.appendChild(createCategory(categoryName, filteredItems, cssClass));
+  // Отрисовываем меню по категориям
+  function renderMenu(data) {
+    menuContainer.innerHTML = '';
+    for (const category in data) {
+      if (data.hasOwnProperty(category)) {
+        menuContainer.appendChild(createCategory(category, data[category]));
       }
-    });
+    }
   }
 
-  // Добавить в заказ
-  function addToOrder(id, name, price, quantity) {
-    if (!order[id]) {
-      order[id] = { name, price, quantity };
+  // Добавляем товар в заказ
+  function addToOrder(item, quantity) {
+    if (order[item.id]) {
+      order[item.id].quantity += quantity;
     } else {
-      order[id].quantity += quantity;
+      order[item.id] = { item, quantity };
     }
     updateOrderSummary();
   }
 
-  // Обновить вид заказа
+  // Обновляем отображение заказа
+  const orderSummary = document.getElementById('order-summary');
+  const orderItemsList = document.getElementById('order-items');
+  const orderTotalEl = document.getElementById('order-total');
+  const clearOrderBtn = document.getElementById('clear-order');
+  const submitOrderBtn = document.getElementById('submit-order');
+
   function updateOrderSummary() {
-    const items = Object.entries(order);
+    const items = Object.values(order);
     if (items.length === 0) {
       orderSummary.style.display = 'none';
       return;
     }
-    orderSummary.style.display = 'block';
-    orderItemsEl.innerHTML = '';
+
+    orderItemsList.innerHTML = '';
     let total = 0;
-    items.forEach(([id, {name, price, quantity}]) => {
+    items.forEach(({item, quantity}) => {
       const li = document.createElement('li');
-      li.textContent = `${name} x${quantity}`;
+      li.textContent = `${item.name} × ${quantity}`;
+      const price = item.price * quantity;
+      total += price;
       const priceSpan = document.createElement('span');
-      priceSpan.textContent = (price * quantity) + ' ₽';
+      priceSpan.textContent = `${price} ₽`;
       li.appendChild(priceSpan);
-      orderItemsEl.appendChild(li);
-      total += price * quantity;
+      orderItemsList.appendChild(li);
     });
-    orderTotalEl.textContent = 'Итого: ' + total + ' ₽';
+    orderTotalEl.textContent = `Итого: ${total} ₽`;
+    orderSummary.style.display = 'block';
   }
 
   clearOrderBtn.addEventListener('click', () => {
-    order = {};
-    updateOrderSummary();
+    if (confirm('Очистить весь заказ?')) {
+      order = {};
+      updateOrderSummary();
+    }
   });
+
+  // Поиск по меню
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    for (const category in menuData) {
+      if (menuData.hasOwnProperty(category)) {
+        const categorySection = menuContainer.querySelector(`section[data-category="${category}"]`);
+        const itemsList = categorySection.querySelector('.category-items');
+        const items = itemsList.children;
+
+        let anyVisible = false;
+        for (let i = 0; i < items.length; i++) {
+          const name = items[i].querySelector('.menu-name').textContent.toLowerCase();
+          if (name.includes(query)) {
+            items[i].style.display = '';
+            anyVisible = true;
+          } else {
+            items[i].style.display = 'none';
+          }
+        }
+        // Скрываем категорию если нет совпадений
+        categorySection.style.display = anyVisible ? '' : 'none';
+      }
+    }
+  });
+
+  // Модальное окно и отправка заказа
+  const modal = document.getElementById('modal');
+  const modalSubmitBtn = document.getElementById('modal-submit');
+  const modalCancelBtn = document.getElementById('modal-cancel');
+  const customerNameInput = document.getElementById('customer-name');
+  const customerPhoneInput = document.getElementById('customer-phone');
 
   submitOrderBtn.addEventListener('click', () => {
     if (Object.keys(order).length === 0) {
-      alert('Добавьте товары в заказ!');
+      alert('Пожалуйста, добавьте товары в заказ перед оформлением.');
       return;
     }
-    modal.style.display = 'flex';
-  });
-
-  confirmOrderBtn.addEventListener('click', () => {
-    const name = customerNameInput.value.trim();
-    const phone = customerPhoneInput.value.trim();
-    if (!name || !phone) {
-      alert('Пожалуйста, введите имя и телефон.');
-      return;
-    }
-    // Здесь можно отправить заказ на сервер или в Telegram
-    alert(`Спасибо за заказ, ${name}! Мы свяжемся с вами по телефону ${phone}.`);
-    modal.style.display = 'none';
-    order = {};
-    updateOrderSummary();
     customerNameInput.value = '';
     customerPhoneInput.value = '';
+    modal.style.display = 'flex';
+    customerNameInput.focus();
   });
 
-  modal.addEventListener('click', e => {
-    if (e.target === modal) modal.style.display = 'none';
+  modalCancelBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
   });
 
-  searchInput.addEventListener('input', () => {
-    renderMenu(searchInput.value);
+  modalSubmitBtn.addEventListener('click', () => {
+    const name = customerNameInput.value.trim();
+    const phone = customerPhoneInput.value.trim();
+
+    if (name.length < 2) {
+      alert('Пожалуйста, введите ваше имя.');
+      customerNameInput.focus();
+      return;
+    }
+    if (!phone.match(/^[0-9+ -]{7,}$/)) {
+      alert('Пожалуйста, введите корректный телефон.');
+      customerPhoneInput.focus();
+      return;
+    }
+
+    sendOrder(name, phone);
+    modal.style.display = 'none';
   });
 
-  renderMenu();
+  // Функция отправки заказа (пока просто вывод в консоль)
+  function sendOrder(name, phone) {
+    const items = Object.values(order).map(({item, quantity}) => ({
+      name: item.name,
+      price: item.price,
+      quantity
+    }));
+
+    const total = items.reduce((acc, cur) => acc + cur.price * cur.quantity, 0);
+
+    const orderData = {
+      customer: { name, phone },
+      items,
+      total,
+      date: new Date().toISOString()
+    };
+
+    console.log('Новый заказ:', orderData);
+
+    alert(`Спасибо за заказ, ${name}!\nМы свяжемся с вами по телефону ${phone}.`);
+
+    // После отправки очищаем заказ
+    order = {};
+    updateOrderSummary();
+  }
+
+  // Закрываем модал по клику вне содержимого
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Инициализация
+  renderMenu(menuData);
   updateOrderSummary();
+
 </script>
 </body>
 </html>
