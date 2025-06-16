@@ -2,121 +2,260 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Кафе</title>
+  <title>Кафе — Меню</title>
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #fafafa; }
-    header { background: #d35400; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
-    .tabs { display: flex; justify-content: center; background: #f3f3f3; }
-    .tab-button { padding: 1rem; border: none; background: none; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-    .tab-button.active { color: #d35400; font-weight: bold; border-bottom: 2px solid #d35400; }
-    #search-bar { display: flex; justify-content: center; padding: 0.5rem 1rem; background: #fff; }
-    #search-input { width: 100%; max-width: 400px; padding: 0.5rem; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; }
-    #menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; padding: 1rem; }
-    .menu-item { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .menu-item img { width: 100%; height: 120px; object-fit: cover; }
-    .menu-item div { padding: 0.5rem; }
-    .menu-name { font-weight: bold; margin-bottom: 0.3rem; }
-    .menu-controls { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
-    .menu-controls input { width: 40px; text-align: center; }
-    .menu-controls button { padding: 0.3rem 0.7rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    #order-summary { position: fixed; bottom: 0; width: 100%; background: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); padding: 1rem; display: none; z-index: 100; }
-    #order-summary ul { list-style: none; padding: 0; margin: 0 0 0.5rem 0; max-height: 150px; overflow-y: auto; }
-    #order-summary li { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
-    #order-summary button { padding: 0.5rem 1rem; margin-right: 0.5rem; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    #submit-order { background: #2980b9; }
-    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
-    #modal-content { background: white; padding: 2rem; border-radius: 10px; width: 300px; max-width: 90%; text-align: center; }
-    #modal-content input { width: 100%; padding: 0.5rem; margin: 0.5rem 0; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; }
-    #modal-content button { padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+    body {
+      font-family: sans-serif;
+      margin: 0; padding: 0;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: #d35400;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    #search-bar {
+      padding: 0.8rem 1rem;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      position: sticky;
+      top: 56px;
+      z-index: 9;
+    }
+    #search-input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    #menu {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: #fff;
+    }
+    .menu-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1rem;
+      align-items: center;
+    }
+    .menu-item img {
+      width: 90px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #ddd;
+    }
+    .menu-details {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+    .menu-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .menu-category {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 0.3rem;
+    }
+    .menu-price {
+      font-weight: 700;
+      color: #d35400;
+      margin-bottom: 0.3rem;
+    }
+    .menu-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .menu-controls input[type="number"] {
+      width: 50px;
+      padding: 0.3rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .menu-controls button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.4rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .menu-controls button:hover {
+      background: #219150;
+    }
 
-    /* Адаптив для мобильных */
+    #order-summary {
+      background: white;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      padding: 1rem;
+      position: sticky;
+      bottom: 0;
+      display: none;
+      z-index: 20;
+    }
+    #order-items {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.5rem 0;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    #order-items li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      font-size: 0.95rem;
+    }
+    #order-total {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    #clear-order, #submit-order {
+      background: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      transition: background 0.2s;
+    }
+    #clear-order:hover, #submit-order:hover {
+      background: #a32d22;
+    }
+    #submit-order {
+      background: #2980b9;
+    }
+    #submit-order:hover {
+      background: #1f5d8f;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    #modal-content {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem 1.8rem;
+      width: 320px;
+      max-width: 90%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    #modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    #modal-content input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    #modal-content button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #modal-content button:hover {
+      background: #219150;
+    }
+
     @media (max-width: 600px) {
-      body {
-        font-size: 16px;
-      }
-      header {
-        font-size: 1.5rem;
-        padding: 0.8rem 0;
-      }
-      .tabs {
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 0 0.5rem;
-      }
-      .tab-button {
-        flex: 1 1 45%;
-        font-size: 1rem;
-        padding: 0.7rem 0;
-      }
-      #search-bar {
-        padding: 0.6rem 0.7rem;
-      }
-      #search-input {
-        max-width: 100%;
-        font-size: 1rem;
+      #menu {
         padding: 0.5rem 1rem;
       }
-      #menu {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        padding: 1rem 0.7rem 3rem;
-      }
       .menu-item img {
-        height: 110px;
+        width: 80px;
+        height: 60px;
       }
       .menu-name {
         font-size: 1rem;
       }
-      .menu-controls input {
-        width: 40px;
-        font-size: 0.9rem;
+      .menu-controls input[type="number"] {
+        width: 45px;
+        font-size: 0.95rem;
       }
       .menu-controls button {
-        font-size: 0.9rem;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.95rem;
       }
       #order-summary {
         padding: 0.8rem 1rem;
-      }
-      #order-items li {
-        font-size: 0.9rem;
       }
       #order-total {
         font-size: 1rem;
       }
       #clear-order, #submit-order {
-        padding: 0.45rem 1rem;
         font-size: 0.95rem;
+        padding: 0.45rem 1rem;
       }
       #modal-content {
         width: 90%;
-        padding: 1.5rem 1.8rem;
-      }
-      #modal-content input {
-        font-size: 1rem;
-        padding: 0.45rem 0.9rem;
-      }
-      #modal-content button {
-        font-size: 1rem;
-        padding: 0.5rem 0;
+        padding: 1.5rem 1.2rem;
       }
     }
   </style>
 </head>
 <body>
   <header>Меню Кафе</header>
-  <div class="tabs">
-    <button class="tab-button active" data-category="bar">Бар</button>
-    <button class="tab-button" data-category="kitchen">Кухня</button>
-    <button class="tab-button" data-category="desserts">Десерты</button>
-  </div>
   <div id="search-bar">
-    <input type="text" id="search-input" placeholder="Поиск по меню..." />
+    <input type="text" id="search-input" placeholder="Поиск по меню..." autocomplete="off" />
   </div>
+
   <div id="menu"></div>
 
   <div id="order-summary">
     <ul id="order-items"></ul>
     <div id="order-total"></div>
-    <div style="margin-top: 0.5rem;">
+    <div>
       <button id="clear-order">Очистить</button>
       <button id="submit-order">Оформить заказ</button>
     </div>
@@ -145,7 +284,6 @@
     ];
 
     const menuDiv = document.getElementById('menu');
-    const buttons = document.querySelectorAll('.tab-button');
     const orderSummary = document.getElementById('order-summary');
     const orderItemsList = document.getElementById('order-items');
     const orderTotalDiv = document.getElementById('order-total');
@@ -156,7 +294,6 @@
     const modal = document.getElementById('modal');
 
     let order = JSON.parse(localStorage.getItem('order')) || {};
-    let currentCategory = 'bar';
 
     function saveOrder() {
       localStorage.setItem('order', JSON.stringify(order));
@@ -186,47 +323,43 @@
     function renderMenu() {
       const search = searchInput.value.trim().toLowerCase();
       menuDiv.innerHTML = '';
-      menu.filter(item => item.category === currentCategory && item.name.toLowerCase().includes(search))
-        .forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'menu-item';
-          div.innerHTML = `
-            <img src="${item.image}" alt="${item.name}" />
-            <div>
-              <div class="menu-name">${item.name}</div>
-              <div class="menu-price">${item.price}₽</div>
-              <div class="menu-controls">
-                <input type="number" min="1" value="${order[item.id]?.quantity || 1}" id="qty-${item.id}" />
-                <button data-id="${item.id}">Добавить</button>
-              </div>
+      const filtered = menu.filter(item => item.name.toLowerCase().includes(search) || item.category.toLowerCase().includes(search));
+      if (filtered.length === 0) {
+        menuDiv.innerHTML = '<p style="text-align:center; color:#888;">Ничего не найдено</p>';
+        return;
+      }
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'menu-item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <div class="menu-details">
+            <div class="menu-name">${item.name}</div>
+            <div class="menu-category">${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</div>
+            <div class="menu-price">${item.price}₽</div>
+            <div class="menu-controls">
+              <input type="number" min="1" value="1" id="qty-${item.id}" />
+              <button data-id="${item.id}">Добавить</button>
             </div>
-          `;
-          menuDiv.appendChild(div);
+          </div>
+        `;
+        menuDiv.appendChild(div);
 
-          div.querySelector('button').addEventListener('click', () => {
-            const qtyInput = div.querySelector('input');
-            let qty = parseInt(qtyInput.value);
-            if (isNaN(qty) || qty < 1) qty = 1;
-            if (order[item.id]) {
-              order[item.id].quantity += qty;
-            } else {
-              order[item.id] = { ...item, quantity: qty };
-            }
-            saveOrder();
-            updateOrderSummary();
-            qtyInput.value = 1;
-          });
+        div.querySelector('button').addEventListener('click', () => {
+          const qtyInput = div.querySelector('input');
+          let qty = parseInt(qtyInput.value);
+          if (isNaN(qty) || qty < 1) qty = 1;
+          if (order[item.id]) {
+            order[item.id].quantity += qty;
+          } else {
+            order[item.id] = { ...item, quantity: qty };
+          }
+          saveOrder();
+          updateOrderSummary();
+          qtyInput.value = 1;
         });
-    }
-
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentCategory = btn.dataset.category;
-        renderMenu();
       });
-    });
+    }
 
     clearOrderBtn.addEventListener('click', () => {
       order = {};
@@ -245,7 +378,6 @@
         alert('Пожалуйста, заполните имя и телефон');
         return;
       }
-      // Здесь можно отправить заказ на сервер или Telegram-боту
       alert(`Спасибо за заказ, ${name}! Мы свяжемся с вами по номеру ${phone}.`);
       modal.style.display = 'none';
       order = {};
@@ -265,7 +397,6 @@
       renderMenu();
     });
 
-    // Начальная отрисовка
     updateOrderSummary();
     renderMenu();
   </script>
