@@ -344,26 +344,78 @@
     }
 
     // Обновить вид заказа
-    function updateOrderSummary() {
-      const items = Object.values(order);
-      if (items.length === 0) {
-        orderSummary.style.display = "none";
-        return;
+function updateOrderSummary() {
+  const items = Object.values(order);
+  if (items.length === 0) {
+    orderSummary.style.display = "none";
+    return;
+  }
+
+  orderSummary.style.display = "block";
+  orderItemsList.innerHTML = "";
+  let total = 0;
+
+  items.forEach((item) => {
+    const li = document.createElement("li");
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = `${item.name}`;
+
+    const controls = document.createElement("div");
+    controls.style.display = "flex";
+    controls.style.alignItems = "center";
+    controls.style.gap = "5px";
+
+    const minusBtn = document.createElement("button");
+    minusBtn.textContent = "−";
+    minusBtn.onclick = () => {
+      if (item.quantity > 1) {
+        item.quantity--;
+      } else {
+        delete order[item.id + (item.name.includes('(') ? `_${item.name.split('(')[1].split(')')[0]}` : '')];
       }
-      orderSummary.style.display = "block";
-      orderItemsList.innerHTML = "";
-      let total = 0;
-      items.forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = `${item.name} x${item.quantity}`;
-        const priceSpan = document.createElement("span");
-        priceSpan.textContent = `${item.price * item.quantity}₽`;
-        li.appendChild(priceSpan);
-        orderItemsList.appendChild(li);
-        total += item.price * item.quantity;
-      });
-      orderTotalDiv.textContent = `Итого: ${total}₽`;
-    }
+      saveOrder();
+      updateOrderSummary();
+    };
+
+    const qtySpan = document.createElement("span");
+    qtySpan.textContent = item.quantity;
+
+    const plusBtn = document.createElement("button");
+    plusBtn.textContent = "+";
+    plusBtn.onclick = () => {
+      item.quantity++;
+      saveOrder();
+      updateOrderSummary();
+    };
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑";
+    deleteBtn.onclick = () => {
+      delete order[item.id + (item.name.includes('(') ? `_${item.name.split('(')[1].split(')')[0]}` : '')];
+      saveOrder();
+      updateOrderSummary();
+    };
+
+    const priceSpan = document.createElement("span");
+    priceSpan.textContent = `${item.price * item.quantity}₽`;
+    priceSpan.style.marginLeft = "auto";
+
+    controls.appendChild(minusBtn);
+    controls.appendChild(qtySpan);
+    controls.appendChild(plusBtn);
+    controls.appendChild(deleteBtn);
+    controls.appendChild(priceSpan);
+
+    li.appendChild(nameSpan);
+    li.appendChild(controls);
+    orderItemsList.appendChild(li);
+
+    total += item.price * item.quantity;
+  });
+
+  orderTotalDiv.textContent = `Итого: ${total}₽`;
+}
 
     // Создать элемент меню
 function createMenuItem(item) {
