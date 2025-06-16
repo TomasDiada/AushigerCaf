@@ -3,178 +3,136 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Меню Кафе — Мобильная версия</title>
+<title>Меню кафе</title>
 <style>
-  /* --- Общие стили --- */
   body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Arial", sans-serif;
     background: #fff;
+    margin: 0;
+    padding: 0;
     color: #333;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-
   header {
-    background: #d35400;
-    color: white;
-    font-weight: 700;
-    font-size: 1.8rem;
     text-align: center;
-    padding: 18px 10px;
-    user-select: none;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.5rem;
   }
-
-  /* --- Поиск --- */
   #search-bar {
-    padding: 12px 16px;
-    background: #fef8f0;
+    text-align: center;
+    margin-bottom: 1rem;
   }
   #search-input {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 1.3rem;
-    border-radius: 10px;
-    border: 1.8px solid #d35400;
+    width: 280px;
+    max-width: 90vw;
+    padding: 0.7rem 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #d35400;
+    border-radius: 12px;
     outline-offset: 2px;
-    box-sizing: border-box;
+    transition: border-color 0.3s ease;
   }
   #search-input:focus {
     border-color: #e67e22;
     box-shadow: 0 0 8px rgba(230,126,34,0.5);
   }
 
-  /* --- Контейнер меню --- */
   #menu {
-    padding: 0 12px 120px; /* снизу запас для заказа */
+    max-width: 940px;
+    margin: 0 auto 3rem;
+    padding: 0 1rem;
   }
-
-  /* --- Категории --- */
   .category {
-    margin-bottom: 32px;
+    margin-bottom: 1.8rem;
   }
-
   .category-header {
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
     display: flex;
     align-items: center;
-    font-weight: 700;
+    justify-content: space-between;
     font-size: 1.5rem;
-    margin-bottom: 14px;
-    user-select: none;
-    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-bottom: 2px solid #d35400;
+  }
+  .category.collapsed .category-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .category:not(.collapsed) .category-items {
+    max-height: 1500px; /* для анимации раскрытия */
+    overflow: visible;
+    transition: max-height 0.5s ease;
+  }
+  .toggle-icon {
+    font-weight: 700;
+    font-size: 1.2rem;
     color: #d35400;
   }
-  .category-header:focus {
-    outline: 3px solid #e67e22;
-    outline-offset: 4px;
-  }
-
-  /* Иконки категорий */
-  .category-header svg {
-    width: 30px;
-    height: 30px;
-    fill: #d35400;
-    margin-right: 10px;
-    flex-shrink: 0;
-    transition: fill 0.3s ease;
-  }
-
-  /* Подсвечиваем при наведении/фокусе */
-  .category-header:hover svg,
-  .category-header:focus svg {
-    fill: #e67e22;
-  }
-
-  /* Стрелка сворачивания */
-  .toggle-icon {
-    margin-left: auto;
-    font-size: 1.3rem;
-    user-select: none;
-    transition: transform 0.3s ease;
-  }
-
-  .collapsed > .category-header .toggle-icon {
-    transform: rotate(-90deg);
-  }
-
-  /* --- Список блюд --- */
-  .category-items {
+  ul.category-items {
     list-style: none;
-    margin: 0;
+    margin: 0.7rem 0 0 0;
     padding: 0;
   }
 
   .menu-item {
     display: flex;
     align-items: center;
-    padding: 12px 10px;
-    border-radius: 14px;
-    border: 1.6px solid #d35400;
-    margin-bottom: 16px;
-    background: #fff8f2;
-    box-shadow: 0 2px 6px rgba(211, 84, 0, 0.15);
-    transition: box-shadow 0.3s ease;
+    margin-bottom: 14px;
   }
-  .menu-item:hover,
-  .menu-item:focus-within {
-    box-shadow: 0 4px 10px rgba(230, 126, 34, 0.35);
-  }
-
   .menu-item img {
-    width: 84px;
-    height: 62px;
-    border-radius: 10px;
+    width: 110px;  /* Увеличил изображения */
+    height: 80px;
     object-fit: cover;
+    border-radius: 10px;
     flex-shrink: 0;
+    margin-right: 15px;
   }
-
   .menu-info {
     flex-grow: 1;
-    margin-left: 14px;
   }
   .menu-name {
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.2rem; /* без изменений */
+    font-weight: 600;
     margin-bottom: 6px;
   }
   .menu-price {
-    font-size: 1.15rem;
+    font-size: 1.1rem; /* без изменений */
     color: #d35400;
-    font-weight: 600;
   }
-
   .menu-controls {
     display: flex;
     align-items: center;
-    margin-left: 14px;
+    gap: 10px;
   }
-
   .menu-controls input[type="number"] {
-    width: 56px;
-    font-size: 1.3rem;
-    padding: 6px 10px;
+    width: 58px; /* увеличено */
+    height: 40px; /* увеличено */
+    font-size: 1.2rem; /* увеличено */
+    padding: 5px 8px;
     border-radius: 10px;
-    border: 1.6px solid #d35400;
+    border: 1.8px solid #d35400;
     outline-offset: 2px;
-    text-align: center;
-    -moz-appearance: textfield;
-    margin-right: 10px;
+    box-sizing: border-box;
+    -moz-appearance: textfield; /* убрать стрелки в Firefox */
   }
-  /* Убираем стрелки в input number в хроме */
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
+  /* убрать стрелки для input type=number в Chrome */
+  .menu-controls input[type="number"]::-webkit-inner-spin-button,
+  .menu-controls input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-
   .menu-controls button {
-    padding: 11px 22px;
-    background: #d35400;
-    border: none;
-    border-radius: 12px;
-    color: white;
+    padding: 11px 22px; /* увеличено */
+    font-size: 1.15rem; /* увеличено */
     font-weight: 700;
-    font-size: 1.2rem;
+    letter-spacing: 0.8px;
+    background: #d35400;
+    color: white;
+    border-radius: 12px;
+    border: none;
     cursor: pointer;
     transition: background 0.3s ease;
     user-select: none;
@@ -182,59 +140,52 @@
   .menu-controls button:hover,
   .menu-controls button:focus {
     background: #e67e22;
+    outline: none;
   }
 
-  /* --- Сводка заказа --- */
+  /* Блок заказа */
   #order-summary {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border-top: 3px solid #d35400;
-    box-shadow: 0 -4px 14px rgba(211, 84, 0, 0.3);
-    padding: 14px 18px;
-    display: none;
-    flex-direction: column;
-    gap: 14px;
-    font-weight: 700;
-    font-size: 1.3rem;
-    z-index: 99;
+    max-width: 940px;
+    margin: 0 auto 3rem;
+    background: #fff9f0;
+    border: 2px solid #d35400;
+    border-radius: 16px;
+    padding: 1.1rem 1.5rem;
     box-sizing: border-box;
+    display: none;
   }
-
   #order-items {
     list-style: none;
     padding: 0;
-    margin: 0;
-    max-height: 90px;
-    overflow-y: auto;
+    margin: 0 0 0.6rem 0;
   }
   #order-items li {
     display: flex;
     justify-content: space-between;
-    padding: 2px 0;
-    font-weight: 600;
+    font-size: 1.25rem; /* увеличено */
+    padding: 6px 0;
+    border-bottom: 1px solid #f0a85a;
   }
-
   #order-items li span {
-    color: #d35400;
-  }
-
-  #order-total {
-    text-align: right;
-    font-size: 1.5rem;
-    color: #d35400;
-  }
-
-  #clear-order, #submit-order {
-    width: 100%;
-    padding: 14px 0;
     font-weight: 700;
-    font-size: 1.4rem;
+    color: #d35400;
+  }
+  #order-total {
+    font-size: 1.4rem; /* увеличено */
+    font-weight: 700;
+    color: #d35400;
+    margin-bottom: 1rem;
+    text-align: right;
+  }
+  #clear-order, #submit-order {
+    font-size: 1.25rem; /* увеличено */
+    padding: 12px 28px;
     border-radius: 14px;
     border: none;
     cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    margin-right: 1rem;
     user-select: none;
     transition: background 0.3s ease;
   }
@@ -242,165 +193,163 @@
     background: #c0392b;
     color: white;
   }
-  #clear-order:hover,
-  #clear-order:focus {
+  #clear-order:hover, #clear-order:focus {
     background: #e74c3c;
+    outline: none;
   }
   #submit-order {
     background: #27ae60;
     color: white;
   }
-  #submit-order:hover,
-  #submit-order:focus {
+  #submit-order:hover, #submit-order:focus {
     background: #2ecc71;
+    outline: none;
   }
 
-  /* --- Модальное окно --- */
+  /* Модальное окно */
   #modal {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
     display: none;
-    align-items: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
     justify-content: center;
-    z-index: 150;
-    padding: 20px;
-    box-sizing: border-box;
+    align-items: center;
+    z-index: 1000;
   }
   #modal-content {
     background: white;
-    padding: 26px 28px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
+    border-radius: 18px;
+    padding: 28px 34px;
+    width: 340px;
+    max-width: 90vw;
     box-sizing: border-box;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+    text-align: center;
   }
   #modal-content h3 {
     margin-top: 0;
-    font-weight: 700;
-    font-size: 1.7rem;
-    margin-bottom: 18px;
-    text-align: center;
+    font-size: 1.8rem;
     color: #d35400;
   }
   #modal-content input {
     width: 100%;
-    padding: 14px 16px;
-    margin: 8px 0 20px 0;
-    font-size: 1.25rem;
-    border-radius: 12px;
+    margin: 0.9rem 0 1.2rem 0;
+    padding: 12px 16px;
+    font-size: 1.25rem; /* увеличено */
+    border-radius: 14px;
     border: 1.8px solid #d35400;
     outline-offset: 2px;
     box-sizing: border-box;
   }
   #modal-content input:focus {
     border-color: #e67e22;
-    box-shadow: 0 0 12px rgba(230,126,34,0.6);
+    box-shadow: 0 0 10px rgba(230,126,34,0.6);
   }
   #modal-buttons {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: center;
+    gap: 1.5rem;
   }
   #modal-buttons button {
-    flex-grow: 1;
-    padding: 14px 0;
+    padding: 12px 32px;
     font-weight: 700;
-    font-size: 1.25rem;
+    letter-spacing: 1.1px;
     border-radius: 14px;
     border: none;
     cursor: pointer;
-    transition: background 0.3s ease;
+    font-size: 1.2rem;
     user-select: none;
+    transition: background 0.3s ease;
   }
   #modal-submit {
     background: #27ae60;
     color: white;
   }
-  #modal-submit:hover,
-  #modal-submit:focus {
+  #modal-submit:hover, #modal-submit:focus {
     background: #2ecc71;
+    outline: none;
   }
   #modal-cancel {
     background: #c0392b;
     color: white;
   }
-  #modal-cancel:hover,
-  #modal-cancel:focus {
+  #modal-cancel:hover, #modal-cancel:focus {
     background: #e74c3c;
+    outline: none;
   }
 
-  /* --- Адаптив для телефонов --- */
+  /* Адаптивность для мобильных */
   @media (max-width: 520px) {
     header {
-      font-size: 2.1rem;
-      padding: 20px 12px;
+      font-size: 2.8rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
     }
     #search-input {
-      font-size: 1.5rem;
-      padding: 16px 18px;
+      width: 90vw;
+      font-size: 1.4rem;
+      padding: 1rem 1.3rem;
+      border-width: 2.5px;
+      border-radius: 16px;
     }
     .category-header {
-      font-size: 1.8rem;
-    }
-    .category-header svg {
-      width: 36px;
-      height: 36px;
+      font-size: 1.9rem;
+      padding: 0.35rem 0.7rem;
     }
     .menu-item img {
-      width: 100px;
-      height: 76px;
-      border-radius: 14px;
+      width: 140px;  /* еще больше на мобилках */
+      height: 100px;
+      margin-right: 18px;
     }
     .menu-name {
       font-size: 1.6rem;
     }
     .menu-price {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
     }
     .menu-controls input[type="number"] {
-      width: 66px;
-      font-size: 1.5rem;
-      padding: 8px 14px;
-      margin-right: 14px;
+      width: 75px;
+      height: 48px;
+      font-size: 1.6rem;
+      padding: 8px 12px;
+      border-radius: 14px;
     }
     .menu-controls button {
-      padding: 14px 26px;
-      font-size: 1.4rem;
-      border-radius: 16px;
+      padding: 14px 28px;
+      font-size: 1.35rem;
+      border-radius: 14px;
     }
     #order-summary {
-      padding: 18px 24px;
-      font-size: 1.6rem;
+      padding: 1.5rem 2rem;
     }
     #order-items li {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
+      padding: 8px 0;
     }
     #order-total {
-      font-size: 1.7rem;
+      font-size: 1.8rem;
     }
     #clear-order, #submit-order {
       font-size: 1.5rem;
-      padding: 16px 0;
+      padding: 14px 32px;
+      margin-right: 1.3rem;
       border-radius: 16px;
     }
     #modal-content {
-      max-width: 100%;
-      padding: 32px 28px;
+      width: 90vw;
+      padding: 34px 36px;
     }
     #modal-content h3 {
-      font-size: 2rem;
+      font-size: 2.2rem;
     }
     #modal-content input {
-      font-size: 1.4rem;
-      padding: 16px 18px;
-      margin: 10px 0 24px 0;
+      font-size: 1.6rem;
+      padding: 14px 18px;
+      border-radius: 16px;
     }
     #modal-buttons button {
       font-size: 1.4rem;
-      padding: 16px 0;
-      border-radius: 18px;
+      padding: 14px 36px;
+      border-radius: 16px;
     }
   }
 </style>
@@ -410,26 +359,26 @@
 <header>Меню Кафе</header>
 
 <div id="search-bar">
-  <input type="search" id="search-input" placeholder="Поиск по меню..." aria-label="Поиск по меню" />
+  <input type="search" id="search-input" placeholder="Поиск по меню..." />
 </div>
 
-<main id="menu" role="list">
+<main id="menu">
   <!-- Категории меню появятся здесь динамически -->
 </main>
 
-<div id="order-summary" role="region" aria-live="polite" aria-label="Сводка заказа">
+<div id="order-summary" aria-live="polite" aria-atomic="true">
   <ul id="order-items"></ul>
   <div id="order-total">Итого: 0 ₽</div>
-  <button id="clear-order" aria-label="Очистить заказ">Очистить заказ</button>
-  <button id="submit-order" aria-label="Оформить заказ">Оформить заказ</button>
+  <button id="clear-order">Очистить заказ</button>
+  <button id="submit-order">Оформить заказ</button>
 </div>
 
 <!-- Модальное окно для ввода данных покупателя -->
-<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div id="modal-content">
     <h3 id="modal-title">Оформление заказа</h3>
-    <input type="text" id="customer-name" placeholder="Ваше имя" aria-required="true" />
-    <input type="tel" id="customer-phone" placeholder="Телефон" pattern="[0-9+ -]{7,}" aria-required="true" />
+    <input type="text" id="customer-name" placeholder="Ваше имя" autocomplete="name" />
+    <input type="tel" id="customer-phone" placeholder="Телефон" pattern="[0-9+ -]{7,}" autocomplete="tel" />
     <div id="modal-buttons">
       <button id="modal-submit">Отправить</button>
       <button id="modal-cancel">Отмена</button>
@@ -438,19 +387,7 @@
 </div>
 
 <script>
-  // Иконки SVG для категорий
-  const categoryIcons = {
-    kitchen: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M4 20h16v-2H4v2zM3 6h18v2H3V6zm3 4h12v6H6v-6z" />
-    </svg>`,
-    desserts: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 2a7 7 0 017 7c0 2.34-1.68 4.28-4 4.9V17h-2v-3.1c-2.32-.62-4-2.56-4-4.9a7 7 0 017-7z"/>
-    </svg>`,
-    bar: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M8 3v12h8V3H8zm5 15c-3 0-5 1.5-5 3h10c0-1.5-2-3-5-3z"/>
-    </svg>`
-  };
-
+  // Меню по категориям
   const menuData = {
     kitchen: [
       {id: 1, name: "Пельмени", price: 350, image: "https://i.postimg.cc/fRPSYZHH/image.jpg"},
@@ -458,218 +395,224 @@
       {id: 3, name: "Голубцы", price: 390, image: "https://i.postimg.cc/BtCHHZM1/image.jpg"}
     ],
     desserts: [
-      {id: 4, name: "Чизкейк", price: 250, image: "https://i.postimg.cc/DyQmzY0c/image.jpg"},
-      {id: 5, name: "Мороженое", price: 150, image: "https://i.postimg.cc/kX5LfJfP/image.jpg"}
+      {id: 4, name: "Чизкейк", price: 250, image: "https://i.postimg.cc/DyHDF4pm/image.jpg"},
+      {id: 5, name: "Мороженое", price: 120, image: "https://i.postimg.cc/yYGtjHxn/image.jpg"}
     ],
     bar: [
-      {id: 6, name: "Кофе", price: 120, image: "https://i.postimg.cc/43CWL1Dc/image.jpg"},
-      {id: 7, name: "Чай", price: 100, image: "https://i.postimg.cc/FsB7d29c/image.jpg"}
+      {id: 6, name: "Капучино", price: 150, image: "https://i.postimg.cc/bwD3vVbt/image.jpg"},
+      {id: 7, name: "Латте", price: 170, image: "https://i.postimg.cc/RF9RXMY7/image.jpg"},
+      {id: 8, name: "Кола 0,5", price: 120, image: "https://i.postimg.cc/yYqFP6Sk/image.jpg"},
+      {id: 9, name: "RedBull 0,5", price: 180, image: "https://i.postimg.cc/0ynDPpXw/image.jpg"}
     ]
   };
 
-  const menuContainer = document.getElementById('menu');
-  const orderSummary = document.getElementById('order-summary');
-  const orderItemsList = document.getElementById('order-items');
-  const orderTotal = document.getElementById('order-total');
-  const clearOrderBtn = document.getElementById('clear-order');
-  const submitOrderBtn = document.getElementById('submit-order');
-  const searchInput = document.getElementById('search-input');
+  const categoryNames = {
+    kitchen: "Кухня",
+    desserts: "Десерты",
+    bar: "Бар"
+  };
 
-  // Модал
-  const modal = document.getElementById('modal');
-  const modalSubmit = document.getElementById('modal-submit');
-  const modalCancel = document.getElementById('modal-cancel');
-  const customerNameInput = document.getElementById('customer-name');
-  const customerPhoneInput = document.getElementById('customer-phone');
+  const menuContainer = document.getElementById('menu');
+  const searchInput = document.getElementById('search-input');
 
   let order = {};
 
-  // Создаём меню из данных
+  function createMenuItem(item) {
+    const itemEl = document.createElement('li');
+    itemEl.className = 'menu-item';
+
+    itemEl.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" loading="lazy" />
+      <div class="menu-info">
+        <div class="menu-name">${item.name}</div>
+        <div class="menu-price">${item.price} ₽</div>
+      </div>
+      <div class="menu-controls">
+        <input type="number" min="1" step="1" value="1" aria-label="Количество ${item.name}" />
+        <button>Добавить</button>
+      </div>
+    `;
+
+    const quantityInput = itemEl.querySelector('input[type="number"]');
+    const addButton = itemEl.querySelector('button');
+
+    addButton.addEventListener('click', () => {
+      let qty = parseInt(quantityInput.value);
+      if (isNaN(qty) || qty < 1) {
+        alert("Пожалуйста, введите корректное количество (1 или больше).");
+        quantityInput.value = 1;
+        return;
+      }
+      addToOrder(item, qty);
+      quantityInput.value = 1;
+    });
+
+    return itemEl;
+  }
+
+  function createCategory(name, items) {
+    const categoryEl = document.createElement('section');
+    categoryEl.className = 'category';
+    categoryEl.setAttribute('tabindex', '0');
+
+    categoryEl.innerHTML = `
+      <header class="category-header" aria-expanded="true" role="button" tabindex="0">
+        ${name} <span class="toggle-icon">−</span>
+      </header>
+      <ul class="category-items"></ul>
+    `;
+
+    const itemsContainer = categoryEl.querySelector('.category-items');
+    items.forEach(item => {
+      itemsContainer.appendChild(createMenuItem(item));
+    });
+
+    const header = categoryEl.querySelector('.category-header');
+    header.addEventListener('click', () => toggleCategory(categoryEl));
+    header.addEventListener('keydown', e => {
+      if (e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        toggleCategory(categoryEl);
+      }
+    });
+
+    return categoryEl;
+  }
+
+  function toggleCategory(categoryEl) {
+    const collapsed = categoryEl.classList.toggle('collapsed');
+    const header = categoryEl.querySelector('.category-header');
+    const icon = header.querySelector('.toggle-icon');
+    header.setAttribute('aria-expanded', !collapsed);
+    icon.textContent = collapsed ? '+' : '−';
+  }
+
   function renderMenu(filterText = '') {
     menuContainer.innerHTML = '';
-    for (const category in menuData) {
-      const items = menuData[category].filter(item =>
-        item.name.toLowerCase().includes(filterText.toLowerCase())
-      );
-      if (items.length === 0) continue;
+    const filter = filterText.trim().toLowerCase();
 
-      const categoryDiv = document.createElement('section');
-      categoryDiv.classList.add('category');
-      categoryDiv.setAttribute('tabindex', '0');
+    for (const catKey in menuData) {
+      const filteredItems = menuData[catKey].filter(item => item.name.toLowerCase().includes(filter));
+      if (filteredItems.length === 0) continue;
 
-      // Заголовок категории с иконкой и кнопкой сворачивания
-      const categoryHeader = document.createElement('div');
-      categoryHeader.className = 'category-header';
-      categoryHeader.innerHTML = `${categoryIcons[category] || ''}<span>${capitalize(category)}</span><span class="toggle-icon">▾</span>`;
-      categoryHeader.setAttribute('role', 'button');
-      categoryHeader.setAttribute('aria-expanded', 'true');
-      categoryHeader.setAttribute('tabindex', '0');
-      categoryDiv.appendChild(categoryHeader);
-
-      // Список блюд
-      const ul = document.createElement('ul');
-      ul.className = 'category-items';
-
-      items.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'menu-item';
-        li.setAttribute('tabindex', '-1');
-
-        li.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" loading="lazy" />
-          <div class="menu-info">
-            <div class="menu-name">${item.name}</div>
-            <div class="menu-price">${item.price} ₽</div>
-          </div>
-          <div class="menu-controls">
-            <input type="number" min="1" max="99" value="${order[item.id] || 1}" aria-label="Количество для ${item.name}" />
-            <button aria-label="Добавить ${item.name} в заказ">Добавить</button>
-          </div>
-        `;
-
-        // Обработчик добавления в заказ
-        const btn = li.querySelector('button');
-        const qtyInput = li.querySelector('input[type="number"]');
-        btn.addEventListener('click', () => {
-          const qty = parseInt(qtyInput.value);
-          if (qty > 0 && qty <= 99) {
-            addToOrder(item.id, qty);
-          } else {
-            alert('Введите корректное количество от 1 до 99');
-            qtyInput.focus();
-          }
-        });
-
-        ul.appendChild(li);
-      });
-
-      categoryDiv.appendChild(ul);
-      menuContainer.appendChild(categoryDiv);
-
-      // Свертывание категории по клику
-      categoryHeader.addEventListener('click', () => {
-        const isCollapsed = categoryDiv.classList.toggle('collapsed');
-        categoryHeader.setAttribute('aria-expanded', !isCollapsed);
-      });
-      categoryHeader.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          categoryHeader.click();
-        }
-      });
+      const categoryEl = createCategory(categoryNames[catKey], filteredItems);
+      menuContainer.appendChild(categoryEl);
     }
   }
 
-  // Капитализация строки (для названий категорий)
-  function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  // Добавить в заказ
-  function addToOrder(itemId, quantity) {
-    if (order[itemId]) {
-      order[itemId] += quantity;
+  function addToOrder(item, quantity) {
+    if (order[item.id]) {
+      order[item.id].quantity += quantity;
     } else {
-      order[itemId] = quantity;
+      order[item.id] = {...item, quantity};
     }
     updateOrderSummary();
   }
 
-  // Обновить сводку заказа
-  function updateOrderSummary() {
-    const keys = Object.keys(order);
-    if (keys.length === 0) {
-      orderSummary.style.display = 'none';
-      return;
-    }
-    orderSummary.style.display = 'flex';
+  const orderSummary = document.getElementById('order-summary');
+  const orderItemsList = document.getElementById('order-items');
+  const orderTotalEl = document.getElementById('order-total');
+  const clearOrderBtn = document.getElementById('clear-order');
+  const submitOrderBtn = document.getElementById('submit-order');
 
-    orderItemsList.innerHTML = '';
-    let total = 0;
-
-    keys.forEach(id => {
-      const item = findMenuItemById(+id);
-      const qty = order[id];
-      const linePrice = item.price * qty;
-      total += linePrice;
-
-      const li = document.createElement('li');
-      li.textContent = `${item.name} × ${qty}`;
-      const span = document.createElement('span');
-      span.textContent = `${linePrice} ₽`;
-      li.appendChild(span);
-
-      orderItemsList.appendChild(li);
-    });
-
-    orderTotal.textContent = `Итого: ${total} ₽`;
-  }
-
-  // Найти блюдо по id
-  function findMenuItemById(id) {
-    for (const cat in menuData) {
-      const found = menuData[cat].find(i => i.id === id);
-      if (found) return found;
-    }
-    return null;
-  }
-
-  // Очистить заказ
   clearOrderBtn.addEventListener('click', () => {
-    if (confirm('Очистить весь заказ?')) {
-      order = {};
-      updateOrderSummary();
-    }
+    order = {};
+    updateOrderSummary();
   });
 
-  // Оформить заказ - показать модалку
   submitOrderBtn.addEventListener('click', () => {
     if (Object.keys(order).length === 0) {
-      alert('Заказ пустой. Добавьте блюда.');
+      alert("Выберите хотя бы одно блюдо для оформления заказа.");
       return;
     }
-    modal.style.display = 'flex';
-    customerNameInput.focus();
+    openModal();
   });
 
-  // Модал - Отправить заказ (заглушка)
-  modalSubmit.addEventListener('click', () => {
+  function updateOrderSummary() {
+    orderItemsList.innerHTML = '';
+    let total = 0;
+    for (const id in order) {
+      const item = order[id];
+      total += item.price * item.quantity;
+      const li = document.createElement('li');
+      li.textContent = `${item.name} × ${item.quantity}`;
+      const priceSpan = document.createElement('span');
+      priceSpan.textContent = `${item.price * item.quantity} ₽`;
+      li.appendChild(priceSpan);
+      orderItemsList.appendChild(li);
+    }
+    orderTotalEl.textContent = `Итого: ${total} ₽`;
+
+    orderSummary.style.display = total > 0 ? 'block' : 'none';
+  }
+
+  searchInput.addEventListener('input', () => {
+    renderMenu(searchInput.value);
+  });
+
+  // Модальное окно
+  const modal = document.getElementById('modal');
+  const modalSubmitBtn = document.getElementById('modal-submit');
+  const modalCancelBtn = document.getElementById('modal-cancel');
+  const customerNameInput = document.getElementById('customer-name');
+  const customerPhoneInput = document.getElementById('customer-phone');
+
+  function openModal() {
+    modal.style.display = 'flex';
+    customerNameInput.value = '';
+    customerPhoneInput.value = '';
+    customerNameInput.focus();
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  modalCancelBtn.addEventListener('click', () => {
+    closeModal();
+  });
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  modalSubmitBtn.addEventListener('click', () => {
     const name = customerNameInput.value.trim();
     const phone = customerPhoneInput.value.trim();
 
-    if (name === '' || phone === '') {
-      alert('Пожалуйста, введите имя и телефон.');
+    if (!name) {
+      alert("Пожалуйста, введите имя.");
+      customerNameInput.focus();
+      return;
+    }
+    if (!phone.match(/^[0-9+ -]{7,}$/)) {
+      alert("Пожалуйста, введите корректный номер телефона.");
+      customerPhoneInput.focus();
       return;
     }
 
-    // Здесь можно добавить отправку заказа на сервер
+    // Здесь можно отправить заказ на сервер или вывести в консоль
+    // Для примера просто выводим в alert
 
-    alert(`Спасибо за заказ, ${name}!\nМы свяжемся с вами по телефону ${phone}.`);
+    let orderDetails = `Заказ от ${name} (тел: ${phone}):\n\n`;
+    let total = 0;
+    for (const id in order) {
+      const item = order[id];
+      orderDetails += `${item.name} × ${item.quantity} = ${item.price * item.quantity} ₽\n`;
+      total += item.price * item.quantity;
+    }
+    orderDetails += `\nИтого: ${total} ₽`;
+
+    alert(orderDetails);
     order = {};
     updateOrderSummary();
     closeModal();
   });
 
-  // Закрыть модалка
-  modalCancel.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => {
-    if (e.target === modal) closeModal();
-  });
-  function closeModal() {
-    modal.style.display = 'none';
-    customerNameInput.value = '';
-    customerPhoneInput.value = '';
-    submitOrderBtn.focus();
-  }
-
-  // Поиск по меню (реактивный)
-  searchInput.addEventListener('input', () => {
-    renderMenu(searchInput.value);
-  });
-
-  // Начальная отрисовка меню
+  // Инициализация меню при загрузке
   renderMenu();
-  updateOrderSummary();
 </script>
 
 </body>
