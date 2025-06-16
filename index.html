@@ -397,4 +397,71 @@
     });
 
     clearOrderBtn.addEventListener('click', () => {
-      if (confirm('Оч
+      if (confirm('Очистить весь заказ?')) {
+        order = {};
+        saveOrder();
+        updateOrderSummary();
+      }
+    });
+
+    submitOrderBtn.addEventListener('click', () => {
+      if (Object.keys(order).length === 0) {
+        alert('Ваш заказ пуст.');
+        return;
+      }
+      // Показать модальное окно
+      modal.style.display = 'flex';
+      document.getElementById('customer-name').focus();
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    confirmOrderBtn.addEventListener('click', () => {
+      const name = document.getElementById('customer-name').value.trim();
+      const phone = document.getElementById('customer-phone').value.trim();
+      if (!name) {
+        alert('Пожалуйста, введите имя.');
+        return;
+      }
+      const phoneRegex = /^\+?\d{10,15}$/;
+      if (!phoneRegex.test(phone)) {
+        alert('Пожалуйста, введите корректный телефон.');
+        return;
+      }
+      // Формируем текст заказа
+      let orderText = `Новый заказ:\nИмя: ${name}\nТелефон: ${phone}\n\nЗаказ:\n`;
+      let total = 0;
+      for (const key in order) {
+        const item = order[key];
+        orderText += `${item.name} x${item.quantity} — ${item.price * item.quantity}₽\n`;
+        total += item.price * item.quantity;
+      }
+      orderText += `\nИтого: ${total}₽`;
+
+      // Здесь отправка заказа в Telegram или куда нужно
+      // Пока просто выводим alert
+      alert(orderText);
+
+      // Очистка заказа и закрытие модального окна
+      order = {};
+      saveOrder();
+      updateOrderSummary();
+      modal.style.display = 'none';
+
+      // Можно здесь вызвать отправку на сервер или Telegram-бота
+    });
+
+    // Инициализация
+    renderMenu(currentCategory);
+    updateOrderSummary();
+  </script>
+</body>
+</html>
