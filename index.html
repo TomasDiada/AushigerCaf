@@ -366,57 +366,70 @@
     }
 
     // Создать элемент меню
-    function createMenuItem(item) {
-      const div = document.createElement("div");
-      div.className = "menu-item";
-     div.innerHTML = `
-  <img src="${item.image}" alt="${item.name}" />
-  <div>
-    <div class="menu-name">${item.name}</div>
-    <select class="option-select">
-      ${item.options.map(opt => `<option value="${opt.size}" data-price="${opt.price}">${opt.size} - ${opt.price}₽</option>`).join('')}
-    </select>
-    <div class="menu-controls">
-      <input type="number" value="1" min="1" />
-      <button>Добавить</button>
-    </div>
-  </div>
-`;
-      const qtyInput = div.querySelector("input");
-      const addBtn = div.querySelector("button");
-      const qtyInput = div.querySelector('input');
-      const addBtn = div.querySelector('button');
-      const select = div.querySelector('.option-select');
+function createMenuItem(item) {
+  const div = document.createElement("div");
+  div.className = "menu-item";
 
-
-addBtn.addEventListener('click', () => {
-  const qty = parseInt(qtyInput.value);
-  const selectedOption = select.options[select.selectedIndex];
-  const size = selectedOption.value;
-  const price = parseInt(selectedOption.dataset.price);
-
-  if (qty < 1) return;
-
-  const orderId = `${item.id}_${size}`;
-
-  if (order[orderId]) {
-    order[orderId].quantity += qty;
-  } else {
-    order[orderId] = {
-      id: item.id,
-      name: `${item.name} (${size})`,
-      price: price,
-      quantity: qty
-    };
+  let optionsHTML = "";
+  if (item.options) {
+    optionsHTML = `
+      <select class="option-select">
+        ${item.options.map(opt => `<option value="${opt.size}" data-price="${opt.price}">${opt.size} - ${opt.price}₽</option>`).join('')}
+      </select>
+    `;
   }
 
-  saveOrder();
-  updateOrderSummary();
-});
+  div.innerHTML = `
+    <img src="${item.image}" alt="${item.name}" />
+    <div>
+      <div class="menu-name">${item.name}</div>
+      ${optionsHTML}
+      <div class="menu-controls">
+        <input type="number" value="1" min="1" />
+        <button>Добавить</button>
+      </div>
+    </div>
+  `;
 
+  const qtyInput = div.querySelector("input");
+  const addBtn = div.querySelector("button");
+  const select = div.querySelector(".option-select");
 
-      return div;
+  addBtn.addEventListener("click", () => {
+    const qty = parseInt(qtyInput.value);
+    if (qty < 1) return;
+
+    let name = item.name;
+    let price = item.price;
+    let orderId = `${item.id}`;
+
+    // если есть select — значит это товар с опциями
+    if (select) {
+      const selectedOption = select.options[select.selectedIndex];
+      const size = selectedOption.value;
+      price = parseInt(selectedOption.dataset.price);
+      name += ` (${size})`;
+      orderId += `_${size}`;
     }
+
+    if (order[orderId]) {
+      order[orderId].quantity += qty;
+    } else {
+      order[orderId] = {
+        id: item.id,
+        name: name,
+        price: price,
+        quantity: qty
+      };
+    }
+
+    saveOrder();
+    updateOrderSummary();
+  });
+
+  return div;
+}
+
 
     // Отрисовать меню с разделами и фильтром поиска
     function renderMenu(filter = "") {
